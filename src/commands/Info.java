@@ -2,7 +2,7 @@ package src.commands;
 
 import src.Program;
 
-public class Info extends Command {
+public class Info implements Command {
 
 //    public static final String name = "info";
     public static final String[] args = new String[0];
@@ -11,6 +11,7 @@ public class Info extends Command {
 
     @Override
     public void execute(Program program, String[] args) {
+        Command.checkArgsConformity(Info.args, args);
 
     }
 

@@ -2,24 +2,38 @@ package src.commands;
 
 import src.Program;
 
-public class ExecuteScript extends Command {
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
+public class ExecuteScript implements Command {
 
     public final static String[] args = {"file_name"};
 
     @Override
     public void execute(Program program, String[] args) {
-        if(ExecuteScript.args.length != args.length) throw new RuntimeException(); // Change to checked exception that must be caught
-//        File file = new File(args[0]);
-//        if(!file.exists() || file.isDirectory() || !file.canRead()) throw new RuntimeException(); /// change to more meaningful action
-//        var text = Files.readLi
+        Command.checkArgsConformity(ExecuteScript.args, args);
 
-        String text = "help\ninfo";
-        String[] commands = text.split("\n");
-        for(String command : commands) { program.parsCommand(command); }
+        try( InputStream fileInputStream = new FileInputStream(args[0]);
+             Reader decoder = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+             BufferedReader lineReader = new BufferedReader(decoder)) {
+            String command = lineReader.readLine();
+            while(command != null) {
+                program.parseCommand(command);
+                command = lineReader.readLine();
+            }
+        } catch (IOException e) {
+            program.out.print("Невозможно выполнить команду: файл " + args[0] + " не существует.");
+//            System.out.println("Невозможно выполнить команду: файл " + args[0] + " не существует.");
+        }
     }
 
     @Override
     public String getDescription() {
-        return " [" + String.join(", ", args) + "] (считывает и исполняет скрипт из указанного файла)";
+        return "считывает и исполняет скрипт из указанного файла";
+    }
+
+    @Override
+    public String[] args() {
+        return args;
     }
 }

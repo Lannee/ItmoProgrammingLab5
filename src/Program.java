@@ -1,21 +1,36 @@
 package src;
 
-
 import src.commands.*;
+import src.logic.CollectionManager;
+import src.logic.ConsolOutputManager;
+import src.logic.OutputManager;
+import src.stored.Dragon;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
 
 public class Program {
 
-//    private final ArrayList<Command> commands = new ArrayList<>();
-    private final Map<String, Command> commands = Config.declaredCommands;
-    private CollectionManager collection = new CollectionManager();
+    private static Program singleton = null;
 
-    public Program() {
+    private final Map<String, Command> commands = Config.declaredCommands;
+    private CollectionManager<?> collection = new CollectionManager<Dragon>();
+    public final OutputManager out = new ConsolOutputManager();
+//    public final InputManager in;
+
+    private Program() {
+
     }
 
-    public void parsCommand(String line) {
+    public static Program getInstance() {
+        return singleton != null ? singleton = new Program() : singleton;
+    }
+
+//    private static void initializeCollection()
+
+    public void parseCommand(String line) {
         line = line.trim();
         if(line.equals("")) return;
 
@@ -29,11 +44,16 @@ public class Program {
         if(commands.containsKey(command)) {
             commands.get(command).execute(this, args);
         } else {
-            System.err.println("Incorrect command. Type info command to get the information about all commands.");
+            out.print("Unknown command " + command + ". Type help to get information about all commands.");
         }
     }
 
-    public CollectionManager getCollection() {
-        return collection;
+    public List<?> collection() {
+        return collection.getElements();
+    }
+
+    public static void main(String[] args) {
+        Program program = Program.getInstance();
+        program.parseCommand("execute_script zhopa.txt");
     }
 }

@@ -2,12 +2,13 @@ package src.commands;
 
 import src.Program;
 
-public class Update extends Command {
+public class Update implements Command {
 //    public final static String name = "update";
     public final static String[] args = {"id", "element"};
 
     @Override
     public void execute(Program program, String[] args) {
+        Command.checkArgsConformity(Update.args, args);
 
     }
 
