@@ -12,11 +12,16 @@ public class Info implements Command {
     @Override
     public void execute(Program program, String[] args) {
         Command.checkArgsConformity(Info.args, args);
-
+        program.out.print(program.collection().getInfo());
     }
 
     @Override
     public String getDescription() {
-        return " " + String.join(", ", args) + " (выводит в стандартный поток вывода информацию о коллекции)";
+        return "Выводит в стандартный поток вывода информацию о коллекции";
+    }
+
+    @Override
+    public String[] args() {
+        return args;
     }
 }
