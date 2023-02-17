@@ -4,7 +4,7 @@ import src.Program;
 
 public class Add implements Command {
 
-    public final static String[] args = {"element"};
+    public final static String[] args = new String[0];
 
     @Override
     public void execute(Program program, String[] args) {
@@ -13,7 +13,7 @@ public class Add implements Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Добавляет новый элемент в коллекцию";
     }
 
     @Override

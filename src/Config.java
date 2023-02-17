@@ -1,7 +1,6 @@
 package src;
 
 import src.commands.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +8,7 @@ public final class Config {
     public static final Map<String, Command> declaredCommands = new HashMap<>();
     /*
     declaredCommands - container for all available commands.
-    First argument - name of the command (it must not contain whitespace characters)
+    First argument - string name of the command (it must not contain whitespace characters)
     Second argument - Command object itself
      */
 
@@ -23,7 +22,6 @@ public final class Config {
         declaredCommands.put("exit", new Exit());
         declaredCommands.put("save", new Save());
         declaredCommands.put("show", new Show());
-        declaredCommands.put("update_id", new UpdateId());
         declaredCommands.put("remove_first", new RemoveFirst());
         declaredCommands.put("remove_head", new RemoveHead());
         declaredCommands.put("remove_by_id", new RemoveById());

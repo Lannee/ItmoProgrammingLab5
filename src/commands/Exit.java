@@ -4,6 +4,8 @@ import src.Program;
 
 public class Exit implements Command {
 
+    private static final String[] args = new String[0];
+
     @Override
     public void execute(Program program, String[] args) {
         System.exit(0);
@@ -11,6 +13,11 @@ public class Exit implements Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Завершает программу без сохранения в файл";
+    }
+
+    @Override
+    public String[] args() {
+        return args;
     }
 }

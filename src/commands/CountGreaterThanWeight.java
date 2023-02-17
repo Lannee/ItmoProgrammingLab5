@@ -18,6 +18,6 @@ public class CountGreaterThanWeight implements Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Выводит количество элементов, значение поля " + args[0] + " которых больше заданного";
     }
 }

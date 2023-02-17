@@ -10,6 +10,11 @@ public class GroupCountingById implements Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Группирует элементы коллекции по значению поля id, выводит количество элементов в каждой группе";
+    }
+
+    @Override
+    public String[] args() {
+        return new String[0];
     }
 }

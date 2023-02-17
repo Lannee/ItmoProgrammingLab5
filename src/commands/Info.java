@@ -4,7 +4,6 @@ import src.Program;
 
 public class Info implements Command {
 
-//    public static final String name = "info";
     public static final String[] args = new String[0];
 
     public Info() {}

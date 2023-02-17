@@ -14,7 +14,7 @@ public class Help implements Command {
     public void execute(Program program, String[] args) {
         Command.checkArgsConformity(Help.args, args);
         Config.declaredCommands.forEach((key, value) -> {
-            String out = value.args().length == 0 ? key : key + "[" + String.join(", ", value.args()) + "]";
+            String out = value.args().length == 0 ? key : key + " [" + String.join(", ", value.args()) + "]";
             program.out.print(out + " (" + value.getDescription() + ")");
         });
     }

@@ -3,6 +3,8 @@ package src.commands;
 import src.Program;
 
 public class RemoveGreater implements Command {
+
+    private static final String[] args = new String[0];
     @Override
     public void execute(Program program, String[] args) {
 
@@ -10,6 +12,11 @@ public class RemoveGreater implements Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Удаляет из коллекции все элементы, превышающие заданный";
+    }
+
+    @Override
+    public String[] args() {
+        return args;
     }
 }

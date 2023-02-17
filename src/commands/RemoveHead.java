@@ -3,6 +3,8 @@ package src.commands;
 import src.Program;
 
 public class RemoveHead implements Command {
+
+    private static final String[] args = new String[0];
     @Override
     public void execute(Program program, String[] args) {
 
@@ -10,6 +12,11 @@ public class RemoveHead implements Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Выводит первый элемент коллекции и удаляет его";
+    }
+
+    @Override
+    public String[] args() {
+        return args;
     }
 }

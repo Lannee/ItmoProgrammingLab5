@@ -3,6 +3,8 @@ package src.commands;
 import src.Program;
 
 public class RemoveById implements Command {
+
+    private static final String[] args = {"id"};
     @Override
     public void execute(Program program, String[] args) {
 
@@ -10,6 +12,11 @@ public class RemoveById implements Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Удаляет элемент из коллекции по его " + args[0];
+    }
+
+    @Override
+    public String[] args() {
+        return args;
     }
 }

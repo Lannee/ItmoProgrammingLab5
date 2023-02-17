@@ -10,7 +10,7 @@ public class RemoveFirst implements Command {
 
     @Override
     public void execute(Program program, String[] args) {
-        List<?> collection = program.collection();
+        List<?> collection = program.collection().getElements();
         collection.remove(collection.get(0));
     }
 
