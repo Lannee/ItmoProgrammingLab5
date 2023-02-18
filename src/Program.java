@@ -1,31 +1,38 @@
 package src;
 
 import src.commands.*;
-import src.logic.CollectionManager;
-import src.logic.ConsolOutputManager;
-import src.logic.OutputManager;
+import src.logic.data.CSVFileDataManager;
+import src.logic.data.DataManager;
+import src.logic.streams.ConsoleInputManager;
+import src.logic.streams.ConsoleOutputManager;
+import src.logic.streams.InputManager;
+import src.logic.streams.OutputManager;
 import src.stored.Dragon;
 
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
+
 
 
 public class Program {
 
+    public final static String invite = ">>>";
+    public final static String indent = "\t";
+
     private static Program singleton = null;
 
     private final Map<String, Command> commands = Config.declaredCommands;
-    private CollectionManager<?> collection = new CollectionManager<Dragon>();
-    public final OutputManager out = new ConsolOutputManager();
-//    public final InputManager in;
+    private final DataManager<?> collection = new CSVFileDataManager<Dragon>(Dragon.class);
+    public final OutputManager out = new ConsoleOutputManager();
+    public final InputManager in = new ConsoleInputManager();
 
     private Program() {
 
     }
 
     public static Program getInstance() {
-        return singleton != null ? singleton = new Program() : singleton;
+        return singleton == null ? singleton = new Program() : singleton;
     }
 
 //    private static void initializeCollection()
@@ -44,16 +51,30 @@ public class Program {
         if(commands.containsKey(command)) {
             commands.get(command).execute(this, args);
         } else {
-            out.print("Unknown command " + command + ". Type help to get information about all commands.");
+            out.print("Unknown command " + command + ". Type help to get information about all commands.\n");
         }
     }
 
-    public List<?> collection() {
-        return collection.getElements();
+    public DataManager<?> collection() {
+        return collection;
     }
 
     public static void main(String[] args) {
         Program program = Program.getInstance();
-        program.parseCommand("execute_script zhopa.txt");
+        String line;
+        while(true) {
+            try {
+                program.out.print(invite + " ");
+                try {
+                    line = program.in.readLine();
+                    program.parseCommand(line);
+                } catch (IOException e) {
+                    System.out.println("Exception!!!!!111!!1!");
+                }
+            } catch (IllegalArgumentException iae) {
+                program.out.print(iae.getMessage() + "\n");
+            }
+        }
+
     }
 }
