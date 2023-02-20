@@ -1,24 +1,26 @@
 package src.logic.data;
 
 
+import src.stored.Dragon;
+
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public abstract class FileDataManager<T extends Comparable<? super T>> implements DataManager<T> {
 
     private List<T> collection = new LinkedList<>();
-    private final Class<?> clT;
-    private final ZonedDateTime initialization;
-    private ZonedDateTime modification;
+    private final Class<T> clT;
+    protected ZonedDateTime initialization;
+    protected ZonedDateTime modification;
 
-    public FileDataManager(Class<?> clT) {
+    public FileDataManager(Class<T> clT) {
         this.clT = clT;
-        initialization = ZonedDateTime.now();
-        modification = ZonedDateTime.now();
+    }
+
+    @Override
+    public Class<T> getClT() {
+        return clT;
     }
 
 
@@ -28,13 +30,20 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
 
     @Override
     public String getInfo() {
-        return "Тип хранимых данных : " + clT.getName() + "\n" +
+        return "Тип хранимых данных : " + clT.getSimpleName() + "\n" +
                 "Размер коллекции : " + collection.size() + "\n" +
                 "Дата инициализации : " + initialization + "\n" +
                 "Дата последнего изменения : " + modification;
     }
 
     public abstract void initialize(String file) throws IOException;
+
+    public abstract void loadToFile(List<T> collection);
+
+    @Override
+    public int size() {
+        return collection.size();
+    }
 
     @Override
     public void add(T element) {
@@ -48,10 +57,10 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
         sort();
     }
 
-    @Override
-    public List<T> getElements() {
-        return collection;
-    }
+//    @Override
+//    public List<T> getElements() {
+//        return collection;
+//    }
 
     @Override
     public void clear() {
@@ -60,12 +69,13 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
 
     @Override
     public T get(int id) {
-        return null;
+        return collection.get(id);
     }
 
     @Override
-    public void remove(T eleement) {
-
+    public void remove(Object o) {
+        collection.remove(o);
+        sort();
     }
 
 

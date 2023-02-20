@@ -9,7 +9,7 @@ public class Clear implements Command {
     @Override
     public void execute(Program program, String[] args) {
         Command.checkArgsConformity(args, Clear.args);
-        program.collection().clear();
+        program.collection.clear();
     }
 
     @Override

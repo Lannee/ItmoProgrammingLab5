@@ -11,7 +11,7 @@ public class Info implements Command {
     @Override
     public void execute(Program program, String[] args) {
         Command.checkArgsConformity(Info.args, args);
-        program.out.print(program.collection().getInfo());
+        program.out.print(program.collection.getInfo() + "\n");
     }
 
     @Override

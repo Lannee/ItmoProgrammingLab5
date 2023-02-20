@@ -1,6 +1,7 @@
 package src.commands;
 
 import src.Program;
+import src.logic.data.DataManager;
 
 import java.util.List;
 
@@ -10,13 +11,17 @@ public class RemoveFirst implements Command {
 
     @Override
     public void execute(Program program, String[] args) {
-        List<?> collection = program.collection().getElements();
-        collection.remove(collection.get(0));
+        DataManager<?> collection = program.collection;
+        if(collection.size() == 0) {
+            program.out.print("Cannot remove as collection is empty\n");
+        } else {
+            collection.remove(collection.get(0));
+        }
     }
 
     @Override
     public String getDescription() {
-        return "Удаляет первый элемент из коллекции";
+        return "Removes the first element from the collection";
     }
 
     @Override
