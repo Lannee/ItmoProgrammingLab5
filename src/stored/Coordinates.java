@@ -1,9 +1,14 @@
 package src.stored;
 
+import src.annotations.Fillable;
 import src.commands.Command;
 
-public class Coordinates implements Comparable<Coordinates> {
+import java.io.Serializable;
+
+public class Coordinates implements Comparable<Coordinates>, Serializable {
+    @Fillable
     private long x; //Максимальное значение поля: 955
+    @Fillable
     private Integer y; //Максимальное значение поля: 207, Поле не может быть null
 
 
@@ -15,5 +20,13 @@ public class Coordinates implements Comparable<Coordinates> {
         } else {
             return y.compareTo(o.y);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Coordinates{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
 }

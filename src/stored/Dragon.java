@@ -1,55 +1,37 @@
 package src.stored;
 
+import src.annotations.Complex;
+import src.annotations.Fillable;
+
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-public class Dragon implements Comparable<Dragon> {
+public class Dragon implements Comparable<Dragon>, Serializable {
 
     private static long instances = 0;
 
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
+    @Fillable
     private String name; //Поле не может быть null, Строка не может быть пустой
+    @Complex
+    @Fillable
     private Coordinates coordinates; //Поле не может быть null
     private java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
+    @Fillable
     private Long age; //Значение поля должно быть больше 0, Поле может быть null
+    @Fillable
     private Long wingspan; //Значение поля должно быть больше 0, Поле может быть null
+    @Fillable
     private float weight; //Значение поля должно быть больше 0
+    @Fillable
     private Color color; //Поле не может быть null
+    @Complex
+    @Fillable
     private Person killer; //Поле может быть null
 
     public Dragon() {
         id = instances++;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
-    }
-
-    public void setCreationDate(ZonedDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public void setAge(Long age) {
-        this.age = age;
-    }
-
-    public void setWingspan(Long wingspan) {
-        this.wingspan = wingspan;
-    }
-
-    public void setWeight(float weight) {
-        this.weight = weight;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public void setKiller(Person killer) {
-        this.killer = killer;
+        creationDate = ZonedDateTime.now();
     }
 
     @Override
@@ -70,5 +52,20 @@ public class Dragon implements Comparable<Dragon> {
         } else {
             return killer.compareTo(o.killer);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Dragon{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", coordinates=" + coordinates +
+                ", creationDate=" + creationDate +
+                ", age=" + age +
+                ", wingspan=" + wingspan +
+                ", weight=" + weight +
+                ", color=" + color +
+                ", killer=" + killer +
+                '}';
     }
 }
