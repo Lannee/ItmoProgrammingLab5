@@ -22,7 +22,7 @@ public class ExecuteScript implements Command {
                 command = lineReader.readLine();
             }
         } catch (IOException e) {
-            program.out.print("Невозможно выполнить команду: файл " + args[0] + " не существует.");
+            program.out.print("Невозможно выполнить команду: файл " + args[0] + " не существует.\n");
 //            System.out.println("Невозможно выполнить команду: файл " + args[0] + " не существует.");
         }
     }

@@ -10,7 +10,14 @@ public class ConsoleInputManager implements InputManager {
             new InputStreamReader(System.in));
 
     @Override
-    public String readLine() throws IOException {
-        return reader.readLine();
+    public String readLine() {
+        String line;
+        try {
+            line = reader.readLine();
+        } catch (IOException e) {
+            line = "НЕЕЕЕЕЕЕЕЕЕЕТТТТТТТТ";
+            System.out.println("НЕЕЕЕЕЕЕЕЕЕЕТТТТТТТТ");
+        }
+        return line;
     }
 }

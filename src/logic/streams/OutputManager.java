@@ -1,4 +1,4 @@
-package src.logic;
+package src.logic.streams;
 
 public interface OutputManager {
 

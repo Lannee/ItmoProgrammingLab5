@@ -8,6 +8,7 @@ public class Exit implements Command {
 
     @Override
     public void execute(Program program, String[] args) {
+        Command.checkArgsConformity(Exit.args, args);
         System.exit(0);
     }
 

@@ -9,6 +9,6 @@ public interface Command {
 
     String[] args();
     static void checkArgsConformity(String[] args1, String[] args2) {
-        if(args1.length != args2.length) throw new RuntimeException();
+        if(args1.length != args2.length) throw new IllegalArgumentException("Invalid number of arguments");
     }
 }
