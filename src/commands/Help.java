@@ -1,7 +1,7 @@
-package src.commands;
+package main.java.src.commands;
 
-import src.Config;
-import src.Program;
+import main.java.src.Config;
+import main.java.src.Program;
 
 public class Help implements Command {
 

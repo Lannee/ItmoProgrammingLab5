@@ -1,7 +1,6 @@
-package src.stored;
+package main.java.src.stored;
 
-import src.annotations.Fillable;
-import src.commands.Command;
+import main.java.src.annotations.Fillable;
 
 import java.io.Serializable;
 

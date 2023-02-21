@@ -1,15 +1,14 @@
-package src;
+package main.java.src;
 
-import src.commands.*;
-import src.logic.data.CSVFileDataManager;
-import src.logic.data.DataManager;
-import src.logic.streams.ConsoleInputManager;
-import src.logic.streams.ConsoleOutputManager;
-import src.logic.streams.InputManager;
-import src.logic.streams.OutputManager;
-import src.stored.Dragon;
+import main.java.src.commands.*;
+import main.java.src.logic.data.CSVFileDataManager;
+import main.java.src.logic.data.DataManager;
+import main.java.src.logic.streams.ConsoleInputManager;
+import main.java.src.logic.streams.ConsoleOutputManager;
+import main.java.src.logic.streams.InputManager;
+import main.java.src.logic.streams.OutputManager;
+import main.java.src.stored.Dragon;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ public class Program {
     private static Program singleton = null;
 
     private final Map<String, Command> commands = Config.declaredCommands;
-    private final DataManager<?> collection = new CSVFileDataManager<Dragon>(Dragon.class);
+    public final DataManager<Dragon> collection = new CSVFileDataManager<>(Dragon.class);
     public final OutputManager out = new ConsoleOutputManager();
     public final InputManager in = new ConsoleInputManager();
 
@@ -55,9 +54,9 @@ public class Program {
         }
     }
 
-    public DataManager<?> collection() {
-        return collection;
-    }
+//    public DataManager<?> collection() {
+//        return collection;
+//    }
 
     public static void main(String[] args) {
         Program program = Program.getInstance();
@@ -65,12 +64,8 @@ public class Program {
         while(true) {
             try {
                 program.out.print(invite + " ");
-                try {
-                    line = program.in.readLine();
-                    program.parseCommand(line);
-                } catch (IOException e) {
-                    System.out.println("Exception!!!!!111!!1!");
-                }
+                line = program.in.readLine();
+                program.parseCommand(line);
             } catch (IllegalArgumentException iae) {
                 program.out.print(iae.getMessage() + "\n");
             }

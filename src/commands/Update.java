@@ -1,6 +1,6 @@
-package src.commands;
+package main.java.src.commands;
 
-import src.Program;
+import main.java.src.Program;
 
 public class Update implements Command {
     public final static String[] args = {"id"};

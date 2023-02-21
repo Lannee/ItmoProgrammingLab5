@@ -1,4 +1,4 @@
-package src.stored;
+package main.java.src.stored;
 
 import java.io.Serializable;
 

@@ -1,18 +1,21 @@
-package src.stored;
+package main.java.src.stored;
 
-import src.annotations.Fillable;
+import main.java.src.annotations.Fillable;
+import main.java.src.annotations.Nullable;
 
 import java.io.Serializable;
 
 public class Person implements Comparable<Person>, Serializable {
     @Fillable
     private String name; //Поле не может быть null, Строка не может быть пустой
+    @Nullable
     @Fillable
     private java.util.Date birthday; //Поле может быть null
     @Fillable
     private float height; //Значение поля должно быть больше 0
     @Fillable
     private String passportID; //Длина строки не должна быть больше 38, Длина строки должна быть не меньше 4, Поле не может быть null
+    @Nullable
     @Fillable
     private Color hairColor; //Поле может быть null
 

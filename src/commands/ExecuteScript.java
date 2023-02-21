@@ -1,6 +1,6 @@
-package src.commands;
+package main.java.src.commands;
 
-import src.Program;
+import main.java.src.Program;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

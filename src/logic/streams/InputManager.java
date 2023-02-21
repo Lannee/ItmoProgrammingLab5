@@ -1,4 +1,4 @@
-package src.logic.streams;
+package main.java.src.logic.streams;
 
 import java.io.IOException;
 

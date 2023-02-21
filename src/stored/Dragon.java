@@ -1,7 +1,8 @@
-package src.stored;
+package main.java.src.stored;
 
-import src.annotations.Complex;
-import src.annotations.Fillable;
+import main.java.src.annotations.Complex;
+import main.java.src.annotations.Fillable;
+import main.java.src.annotations.Nullable;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -17,14 +18,17 @@ public class Dragon implements Comparable<Dragon>, Serializable {
     @Fillable
     private Coordinates coordinates; //Поле не может быть null
     private java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
+    @Nullable
     @Fillable
     private Long age; //Значение поля должно быть больше 0, Поле может быть null
+    @Nullable
     @Fillable
     private Long wingspan; //Значение поля должно быть больше 0, Поле может быть null
     @Fillable
     private float weight; //Значение поля должно быть больше 0
     @Fillable
     private Color color; //Поле не может быть null
+    @Nullable
     @Complex
     @Fillable
     private Person killer; //Поле может быть null
@@ -37,7 +41,7 @@ public class Dragon implements Comparable<Dragon>, Serializable {
     @Override
     public int compareTo(Dragon o) {
         int compare;
-        if((compare = age.compareTo(o.age)) != 0) {
+        if(age != null & o.age != null & (compare = age.compareTo(o.age)) != 0) {
             return compare;
         } else if((compare = name.compareTo(o.name)) != 0){
             return compare;
@@ -60,7 +64,7 @@ public class Dragon implements Comparable<Dragon>, Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", coordinates=" + coordinates +
-                ", creationDate=" + creationDate +
+                ", creationDate=" + creationDate.toLocalDate() +
                 ", age=" + age +
                 ", wingspan=" + wingspan +
                 ", weight=" + weight +

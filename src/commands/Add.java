@@ -1,10 +1,10 @@
-package src.commands;
+package main.java.src.commands;
 
-import src.Program;
-import src.annotations.Complex;
-import src.annotations.Fillable;
-import src.annotations.Nullable;
-import src.utils.StringConverter;
+import main.java.src.Program;
+import main.java.src.annotations.Complex;
+import main.java.src.annotations.Fillable;
+import main.java.src.annotations.Nullable;
+import main.java.src.utils.StringConverter;
 
 import java.lang.reflect.Field;
 import java.sql.Date;

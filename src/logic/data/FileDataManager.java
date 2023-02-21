@@ -1,7 +1,4 @@
-package src.logic.data;
-
-
-import src.stored.Dragon;
+package main.java.src.logic.data;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -9,7 +6,7 @@ import java.util.*;
 
 public abstract class FileDataManager<T extends Comparable<? super T>> implements DataManager<T> {
 
-    private List<T> collection = new LinkedList<>();
+    private final List<T> collection = new LinkedList<>();
     private final Class<T> clT;
     protected ZonedDateTime initialization;
     protected ZonedDateTime modification;
@@ -75,8 +72,12 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
     @Override
     public void remove(Object o) {
         collection.remove(o);
-        sort();
     }
 
+
+    @Override
+    public List<T> getElements() {
+        return collection;
+    }
 
 }

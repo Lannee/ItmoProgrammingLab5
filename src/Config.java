@@ -1,6 +1,6 @@
-package src;
+package main.java.src;
 
-import src.commands.*;
+import main.java.src.commands.*;
 import java.util.HashMap;
 import java.util.Map;
 

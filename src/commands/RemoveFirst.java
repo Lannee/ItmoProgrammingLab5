@@ -1,7 +1,7 @@
-package src.commands;
+package main.java.src.commands;
 
-import src.Program;
-import src.logic.data.DataManager;
+import main.java.src.Program;
+import main.java.src.logic.data.DataManager;
 
 import java.util.List;
 
