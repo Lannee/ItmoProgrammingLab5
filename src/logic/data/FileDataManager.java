@@ -3,6 +3,7 @@ package main.java.src.logic.data;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class FileDataManager<T extends Comparable<? super T>> implements DataManager<T> {
 
@@ -74,10 +75,11 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
         collection.remove(o);
     }
 
-
     @Override
-    public List<T> getElements() {
-        return collection;
+    public void forEach(Consumer<T> action) {
+        for(T element : collection) {
+            action.accept(element);
+        }
     }
 
 }

@@ -7,7 +7,7 @@ public class Show implements Command {
     private static final String[] args = new String[0];
     @Override
     public void execute(Program program, String[] args) {
-        program.collection.getElements().forEach(e -> program.out.print(e + "\n"));
+        program.collection.forEach(e -> program.out.print(e + "\n"));
     }
 
     @Override

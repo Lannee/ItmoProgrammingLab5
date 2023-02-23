@@ -2,6 +2,7 @@ package main.java.src.logic.data;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface DataManager<T> {
 //    List<T> getElements();
@@ -16,5 +17,5 @@ public interface DataManager<T> {
 
     Class<T> getClT();
 
-    List<T> getElements();
+    void forEach(Consumer<T> action);
 }
