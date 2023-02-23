@@ -7,8 +7,9 @@ public class Clear implements Command {
     private final static String[] args = new String[0];
 
     @Override
-    public void execute(Program program, String[] args) {
-        Command.checkArgsConformity(args, Clear.args);
+    public void execute(String[] args) {
+        Program program = Program.getInstance();
+        Command.checkArgsConformity(args, args());
         program.collection.clear();
     }
 

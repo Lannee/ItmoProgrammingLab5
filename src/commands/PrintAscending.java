@@ -6,8 +6,9 @@ public class PrintAscending implements Command {
 
     private static final String[] args = new String[0];
     @Override
-    public void execute(Program program, String[] args) {
-
+    public void execute(String[] args) {
+        Program program = Program.getInstance();
+        Command.checkArgsConformity(args, args());
     }
 
     @Override

@@ -8,7 +8,6 @@ import main.java.src.utils.StringConverter;
 
 import java.lang.reflect.Field;
 import java.sql.Date;
-import java.text.DateFormat;
 import java.util.*;
 import java.util.function.Function;
 
@@ -17,7 +16,9 @@ public class Add implements Command {
     public final static String[] args = new String[0];
 
     @Override
-    public void execute(Program program, String[] args) {
+    public void execute(String[] args) {
+        Program program = Program.getInstance();
+        Command.checkArgsConformity(args, args());
         Class<?> collectionCl = program.collection.getClT();
         program.collection.add(
                 program.collection.getClT().cast(

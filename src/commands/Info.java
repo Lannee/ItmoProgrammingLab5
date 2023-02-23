@@ -9,8 +9,9 @@ public class Info implements Command {
     public Info() {}
 
     @Override
-    public void execute(Program program, String[] args) {
-        Command.checkArgsConformity(Info.args, args);
+    public void execute(String[] args) {
+        Program program = Program.getInstance();
+        Command.checkArgsConformity(args(), args);
         program.out.print(program.collection.getInfo() + "\n");
     }
 

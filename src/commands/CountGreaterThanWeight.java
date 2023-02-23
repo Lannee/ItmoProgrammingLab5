@@ -7,7 +7,9 @@ public class CountGreaterThanWeight implements Command {
     private final static String[] args = {"weight"};
 
     @Override
-    public void execute(Program program, String[] args) {
+    public void execute(String[] args) {
+        Program program = Program.getInstance();
+        Command.checkArgsConformity(args, args());
 
     }
 

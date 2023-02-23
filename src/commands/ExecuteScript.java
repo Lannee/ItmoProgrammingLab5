@@ -10,8 +10,9 @@ public class ExecuteScript implements Command {
     public final static String[] args = {"file_name"};
 
     @Override
-    public void execute(Program program, String[] args) {
-        Command.checkArgsConformity(ExecuteScript.args, args);
+    public void execute(String[] args) {
+        Program program = Program.getInstance();
+        Command.checkArgsConformity(args(), args);
 
         try( InputStream fileInputStream = new FileInputStream(args[0]);
              Reader decoder = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);

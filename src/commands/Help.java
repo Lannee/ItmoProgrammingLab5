@@ -11,7 +11,8 @@ public class Help implements Command {
     public Help() {}
 
     @Override
-    public void execute(Program program, String[] args) {
+    public void execute(String[] args) {
+        Program program = Program.getInstance();
         Command.checkArgsConformity(Help.args, args);
         Config.declaredCommands.forEach((key, value) -> {
             String out = value.args().length == 0 ? key : key + " [" + String.join(", ", value.args()) + "]";

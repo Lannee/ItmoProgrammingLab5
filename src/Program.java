@@ -48,7 +48,7 @@ public class Program {
         else { args = Arrays.copyOfRange(words, 1, words.length); }
 
         if(commands.containsKey(command)) {
-            commands.get(command).execute(this, args);
+            commands.get(command).execute(args);
         } else {
             out.print("Unknown command " + command + ". Type help to get information about all commands.\n");
         }

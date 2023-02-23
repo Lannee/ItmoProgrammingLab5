@@ -1,9 +1,7 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
-
 public interface Command {
-    void execute(Program program, String[] args);
+    void execute(String[] args);
 
     String getDescription();
 

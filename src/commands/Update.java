@@ -6,7 +6,8 @@ public class Update implements Command {
     public final static String[] args = {"id"};
 
     @Override
-    public void execute(Program program, String[] args) {
+    public void execute(String[] args) {
+        Program program = Program.getInstance();
         Command.checkArgsConformity(Update.args, args);
 
     }
