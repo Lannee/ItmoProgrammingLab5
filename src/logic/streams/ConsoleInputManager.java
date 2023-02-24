@@ -18,6 +18,11 @@ public class ConsoleInputManager implements InputManager {
             line = "НЕЕЕЕЕЕЕЕЕЕЕТТТТТТТТ";
             System.out.println("НЕЕЕЕЕЕЕЕЕЕЕТТТТТТТТ");
         }
+
+        if(line == null) {
+            System.exit(1);
+        }
+
         return line;
     }
 }
