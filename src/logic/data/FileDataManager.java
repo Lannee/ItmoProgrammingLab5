@@ -1,7 +1,13 @@
 package main.java.src.logic.data;
 
-import java.io.IOException;
+import java.io.File;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -9,10 +15,11 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
 
     private final List<T> collection = new LinkedList<>();
     private final Class<T> clT;
-    protected ZonedDateTime initialization;
-    protected ZonedDateTime modification;
+    protected File file;
+    protected BasicFileAttributes attr;
+    protected LocalDateTime modification;
 
-    public FileDataManager(Class<T> clT) {
+    public FileDataManager(Class<T> clT){
         this.clT = clT;
     }
 
@@ -30,13 +37,16 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
     public String getInfo() {
         return "Тип хранимых данных : " + clT.getSimpleName() + "\n" +
                 "Размер коллекции : " + collection.size() + "\n" +
-                "Дата инициализации : " + initialization + "\n" +
-                "Дата последнего изменения : " + modification;
+                "Дата инициализации : " + LocalDateTime.ofInstant(
+                        attr.creationTime()
+                                .toInstant(), ZoneId.systemDefault())
+                                        .format(DateTimeFormatter.ofLocalizedDateTime(
+                                                FormatStyle.MEDIUM, FormatStyle.MEDIUM)) + "\n" +
+
+                "Дата последнего изменения : " + modification.format(
+                        DateTimeFormatter.ofLocalizedDateTime(
+                                FormatStyle.MEDIUM, FormatStyle.MEDIUM));
     }
-
-    public abstract void initialize(String file) throws IOException;
-
-    public abstract void loadToFile(List<T> collection);
 
     @Override
     public int size() {
@@ -47,6 +57,7 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
     public void add(T element) {
         collection.add(element);
         sort();
+        modification = LocalDateTime.now();
     }
 
     @Override
@@ -54,12 +65,6 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
         collection.addAll(collection);
         sort();
     }
-
-//    @Override
-//    public List<T> getElements() {
-//        return collection;
-//    }
-
     @Override
     public void clear() {
         collection.clear();
@@ -76,10 +81,12 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
     }
 
     @Override
-    public void forEach(Consumer<T> action) {
-        for(T element : collection) {
-            action.accept(element);
-        }
+    public void forEach(Consumer<? super T> action) {
+        collection.forEach(action);
+    }
+
+    public File getFile() {
+        return file;
     }
 
 }

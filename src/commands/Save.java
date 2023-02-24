@@ -9,6 +9,7 @@ public class Save implements Command {
     public void execute(String[] args) {
         Program program = Program.getInstance();
         Command.checkArgsConformity(args, args());
+        program.collection.save();
     }
 
     @Override

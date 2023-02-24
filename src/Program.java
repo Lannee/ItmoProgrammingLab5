@@ -9,6 +9,7 @@ import main.java.src.logic.streams.InputManager;
 import main.java.src.logic.streams.OutputManager;
 import main.java.src.stored.Dragon;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -27,14 +28,11 @@ public class Program {
     public final InputManager in = new ConsoleInputManager();
 
     private Program() {
-
     }
 
     public static Program getInstance() {
         return singleton == null ? singleton = new Program() : singleton;
     }
-
-//    private static void initializeCollection()
 
     public void parseCommand(String line) {
         line = line.trim();
@@ -54,12 +52,18 @@ public class Program {
         }
     }
 
-//    public DataManager<?> collection() {
-//        return collection;
-//    }
-
-    public static void main(String[] args) {
+    public static void main(String[] args){
         Program program = Program.getInstance();
+
+//        String filePath = args.length > 0 ? args[0] : "";
+        String filePath = "test.csv";
+        try {
+            program.collection.initialize(filePath);
+        } catch (IOException e) {
+            program.out.print("Unable to initialize collection");
+            System.exit(1);
+        }
+
         String line;
         while(true) {
             try {
