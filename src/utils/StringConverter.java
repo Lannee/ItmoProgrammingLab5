@@ -1,5 +1,8 @@
 package main.java.src.utils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,5 +28,7 @@ public class StringConverter {
             if(!matcher.find()) throw new NumberFormatException();
             return new Date(Integer.parseInt(matcher.group(1)) - 1900, Integer.parseInt(matcher.group(3)) - 1, Integer.parseInt(matcher.group(4)));
         });
+        methodForType.put(ZonedDateTime.class, e -> ZonedDateTime.of(LocalDateTime.parse(e), ZoneId.systemDefault()));
+        methodForType.put(LocalDateTime.class, LocalDateTime::parse);
     }
 }

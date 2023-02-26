@@ -1,20 +1,24 @@
 package main.java.src.logic.data;
 
+import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import main.java.src.Program;
 import main.java.src.annotations.Complex;
 import main.java.src.annotations.Fillable;
+import main.java.src.annotations.Nullable;
+import main.java.src.annotations.Storable;
 import main.java.src.utils.Parser;
+import main.java.src.utils.StringConverter;
 
 import java.io.*;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Date;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDataManager<T> {
@@ -24,22 +28,53 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
     }
 
     @Override
-    public void initialize(String filePath) throws IOException {
+    public void initialize(String filePath) {
+        Program program = Program.getInstance();
+        Class<?> clT = program.collection.getClT();
+
         File csvFile = new File(filePath);
-        if(!csvFile.exists() || csvFile.isDirectory() || !filePath.endsWith(".csv")) throw new IOException("Incorrect file");
 
-        super.file = csvFile;
-//        super.modification = LocalDateTime.ofEpochSecond(
-//                        csvFile.lastModified(),
-//                        0,
-//                        ZoneOffset.UTC);
-
-        super.attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-        super.modification = LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
-
+        List<String[]> csvContent;
+        String[] headers;
         try(Reader isr = new InputStreamReader(
-                new FileInputStream(csvFile))) {
-            CollectionMetadata metadata = Parser.parseCSV(isr);
+                new FileInputStream(csvFile));
+            CSVReader reader = new CSVReader(isr)) {
+
+            if(!csvFile.exists() || csvFile.isDirectory() || !filePath.endsWith(".csv")) throw new IOException("Incorrect file");
+            super.file = csvFile;
+            super.attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            super.modification = LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
+
+            csvContent = reader.readAll();
+            if(!(csvContent.size() < 2)) {
+                headers = csvContent.get(0);
+                csvContent = csvContent.subList(1, csvContent.size());
+
+            } else {
+                throw new FileFormatException("File is empty");
+            }
+
+            for(String[] values : csvContent) {
+                try {
+                    program.collection.add(program
+                                    .collection
+                                    .getClT()
+                                    .cast(createObject(clT, headers, values)));
+
+                } catch (ReflectiveOperationException e) {
+                    program.out.print("Unable to create an object\n");
+                }
+            }
+
+        } catch (FileFormatException e) {
+            program.out.print(e.getMessage() + ". Do you want to rewrite this file (y/n) : ");
+            if(!program.in.readLine().equals("y")) {
+                System.exit(0);
+            }
+
+        } catch (IOException e) {
+            program.out.print("Unable to initialize collection");
+            System.exit(1);
         }
     }
 
@@ -79,13 +114,9 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
     }
 
     private static String[] getHeaders(Class<?> cl) {
-        int headersAmount = countObjectsFields(cl);
         List<String> headers = new LinkedList<>();
 
-        Field[] fields = Arrays.stream(cl
-                        .getDeclaredFields())
-                .filter(e -> e.isAnnotationPresent(Fillable.class))
-                .toArray(Field[]::new);
+        Field[] fields = getFieldsWithAnnotation(cl, Storable.class);
 
         StringBuilder header = new StringBuilder();
         for(Field field : fields) {
@@ -111,10 +142,7 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
         Class<?> objCl = obj.getClass();
         List<String> values = new LinkedList<>();
 
-        Field[] fields = Arrays.stream(objCl
-                        .getDeclaredFields())
-                .filter(e -> e.isAnnotationPresent(Fillable.class))
-                .toArray(Field[]::new);
+        Field[] fields = getFieldsWithAnnotation(objCl, Storable.class);
 
         for(Field field : fields) {
             field.setAccessible(true);
@@ -126,13 +154,114 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
             }
 
             if(field.isAnnotationPresent(Complex.class)) {
-                String[] exLevel = getFieldsValues(fieldValue);
+                String[] exLevel = new String[countObjectsFields(field.getType())];
+                if(field.isAnnotationPresent(Nullable.class) && fieldValue == null) {
+                    Arrays.fill(exLevel, "null");
+                } else {
+                    exLevel = getFieldsValues(fieldValue);
+                }
                 values.addAll(Arrays.asList(exLevel));
             } else {
+                if(field.getType().isInstance(new Date(0))) {
+                    fieldValue = ((Date)fieldValue).toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                }
+                if(field.getType().isInstance(ZonedDateTime.now())) {
+                    fieldValue = ((ZonedDateTime)fieldValue).toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime();
+                }
                 values.add(fieldValue.toString());
             }
         }
 
         return values.toArray(String[]::new);
+    }
+
+    private static Field[] getFieldsWithAnnotation(Class<?> cl, Class<? extends Annotation> annotation) {
+        return Arrays.stream(cl
+                        .getDeclaredFields())
+                .filter(e -> e.isAnnotationPresent(annotation))
+                .toArray(Field[]::new);
+    }
+
+    private static <T> T createObject(Class<T> cl, String[] headers, String[] values) throws FileFormatException, ReflectiveOperationException {
+        T obj = cl.getConstructor().newInstance();
+
+        List<String[]> headersElements = Arrays.stream(headers)
+                .map(e -> e.split("\\."))
+                .toList();
+
+        List<Field> fields = new LinkedList<>();
+
+        for(int i = 0; i < headersElements.size(); i++) {
+            String[] header = headersElements.get(i);
+            if(!header[0].equals(cl.getSimpleName())) throw new FileFormatException("Invalid file headers");
+
+            Field field = cl.getDeclaredField(header[1]);
+            Class<?> fieldType = field.getType();
+//            System.out.println(fieldType);
+            field.setAccessible(true);
+            if(field.isAnnotationPresent(Complex.class)) {
+                String reducePrefix = cl.getSimpleName() + "." + field.getName() + ".";
+                String prefix = reducePrefix + fieldType.getSimpleName() + ".";
+
+                String exHeader;
+                int exLevelStart = 0;
+                int exLevelEnd = 0;
+                for(int j = 0; j < headers.length; j++) {
+                    exHeader = headers[j];
+                    if(exHeader.startsWith(prefix)) {
+                        exLevelStart = j;
+                        break;
+                    }
+                }
+
+                for(int j = exLevelStart; j < headers.length; j++) {
+                    exHeader = headers[j];
+                    if(!exHeader.startsWith(prefix)) {
+                        break;
+                    }
+                    exLevelEnd = j;
+                }
+
+                i = exLevelEnd;
+
+                String[] exHeaders = Arrays.copyOfRange(headers, exLevelStart, exLevelEnd + 1);
+                String[] exValues = Arrays.copyOfRange(values, exLevelStart, exLevelEnd + 1);
+
+                exHeaders = Arrays.stream(exHeaders).map(e -> e.substring(reducePrefix.length())).toArray(String[]::new);
+                field.set(obj, createObject(fieldType, exHeaders, exValues));
+            } else {
+                if(fieldType.isEnum()) {
+                    Object enumValue;
+                    try {
+                        enumValue = Enum.valueOf((Class<Enum>) fieldType, values[i]);
+                    } catch (IllegalArgumentException iae) {
+                        throw new ReflectiveOperationException();
+                    }
+                    field.set(obj, enumValue);
+                } else {
+                    String value = values[i];
+                    if(value.equals("null")) {
+                        if(!field.isAnnotationPresent(Nullable.class)) return null;
+                        field.set(obj, null);
+                    } else {
+                        if(!StringConverter.methodForType.containsKey(fieldType)) throw new FileFormatException("Unsupported field type");
+                        try {
+                            field.set(obj,
+                                    StringConverter.methodForType
+                                            .get(field.getType())
+                                            .apply(value));
+                        } catch (NumberFormatException e) {
+                            throw new FileFormatException("Invalid data");
+                        }
+                    }
+                }
+            }
+        }
+
+        return obj;
     }
 }

@@ -15,7 +15,7 @@ public interface DataManager<T> {
     void remove(Object o);
 
     int size();
-    void initialize(String filePath) throws IOException;
+    void initialize(String filePath);
     void save();
 
     Class<T> getClT();
