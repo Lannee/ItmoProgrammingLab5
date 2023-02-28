@@ -7,19 +7,16 @@ import main.java.src.annotations.Complex;
 import main.java.src.annotations.Fillable;
 import main.java.src.annotations.Nullable;
 import main.java.src.annotations.Storable;
-import main.java.src.utils.Parser;
 import main.java.src.utils.StringConverter;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.time.*;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDataManager<T> {
 
@@ -193,15 +190,12 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                 .map(e -> e.split("\\."))
                 .toList();
 
-        List<Field> fields = new LinkedList<>();
-
         for(int i = 0; i < headersElements.size(); i++) {
             String[] header = headersElements.get(i);
             if(!header[0].equals(cl.getSimpleName())) throw new FileFormatException("Invalid file headers");
 
             Field field = cl.getDeclaredField(header[1]);
             Class<?> fieldType = field.getType();
-//            System.out.println(fieldType);
             field.setAccessible(true);
             if(field.isAnnotationPresent(Complex.class)) {
                 String reducePrefix = cl.getSimpleName() + "." + field.getName() + ".";

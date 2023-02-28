@@ -56,13 +56,8 @@ public class Program {
         Program program = Program.getInstance();
 
 //        String filePath = args.length > 0 ? args[0] : "";
-        String filePath = "test.csv";
-        try {
-            program.collection.initialize(filePath);
-        } catch (IOException e) {
-            program.out.print("Unable to initialize collection");
-            System.exit(1);
-        }
+        String filePath = "test2.csv";
+        program.collection.initialize(filePath);
 
         String line;
         while(true) {

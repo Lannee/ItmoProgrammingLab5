@@ -15,8 +15,12 @@ public class StringConverter {
     public final static Map<Class<?>, Function<String, ?>> methodForType = new HashMap<>();
 
     static {
-        methodForType.put(float.class, Float::parseFloat);
-        methodForType.put(Float.class, Float::parseFloat);
+        methodForType.put(float.class, e -> {
+            Float f = Float.parseFloat(e);
+            if(f.isInfinite()) throw new NumberFormatException();
+            return f;
+        });
+        methodForType.put(Float.class, methodForType.get(float.class));
         methodForType.put(int.class, Integer::parseInt);
         methodForType.put(Integer.class, Integer::parseInt);
         methodForType.put(long.class, Long::parseLong);
