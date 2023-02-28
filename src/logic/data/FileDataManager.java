@@ -76,8 +76,14 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
     }
 
     @Override
-    public void remove(Object o) {
-        collection.remove(o);
+    public boolean remove(Object o) {
+        for(T element : collection) {
+            if(element.equals(o)) {
+                collection.remove(o);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -85,8 +91,16 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
         collection.forEach(action);
     }
 
-    public File getFile() {
-        return file;
+    @Override
+    public List<T> getElements() {
+        return new LinkedList<>(collection);
+    }
+
+    @Override
+    public List<T> getElements(Comparator<? super T> sorter) {
+        List<T> copy = new LinkedList<>(collection);
+        copy.sort(sorter);
+        return copy;
     }
 
 }
