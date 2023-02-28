@@ -17,7 +17,7 @@ public class Info implements Command {
 
     @Override
     public String getDescription() {
-        return "Выводит в стандартный поток вывода информацию о коллекции";
+        return "Outputs information about the collection to the standard output stream";
     }
 
     @Override

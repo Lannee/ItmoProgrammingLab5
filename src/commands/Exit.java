@@ -12,7 +12,7 @@ public class Exit implements Command {
 
     @Override
     public String getDescription() {
-        return "Завершает программу без сохранения в файл";
+        return "Exit program";
     }
 
     @Override

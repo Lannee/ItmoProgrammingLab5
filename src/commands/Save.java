@@ -14,7 +14,7 @@ public class Save implements Command {
 
     @Override
     public String getDescription() {
-        return "Сохраняет коллекцию в файл";
+        return "Saves the collection to the file";
     }
 
     @Override

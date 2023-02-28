@@ -27,6 +27,6 @@ public class Help implements Command {
 
     @Override
     public String getDescription() {
-        return "Выводит список всех доступных команд";
+        return "Displays a list of all available commands";
     }
 }

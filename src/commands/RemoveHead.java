@@ -22,7 +22,7 @@ public class RemoveHead implements Command {
 
     @Override
     public String getDescription() {
-        return "Выводит первый элемент коллекции и удаляет его";
+        return "Prints the first element of the collection and deletes it";
     }
 
     @Override

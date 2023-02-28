@@ -10,7 +10,9 @@ public class Clear implements Command {
     public void execute(String[] args) {
         Program program = Program.getInstance();
         Command.checkArgsConformity(args, args());
-        program.collection.clear();
+        program.out.print("Are you sure you want to clear the collection (y/n) : ");
+        if(program.in.readLine().equals("y"))
+            program.collection.clear();
     }
 
     @Override
@@ -20,6 +22,6 @@ public class Clear implements Command {
 
     @Override
     public String getDescription() {
-        return "Очищает коллекцию";
+        return "Clears the collection";
     }
 }
