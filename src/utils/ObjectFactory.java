@@ -1,9 +1,7 @@
 package main.java.src.utils;
 
 import main.java.src.Program;
-import main.java.src.annotations.Complex;
-import main.java.src.annotations.Fillable;
-import main.java.src.annotations.Nullable;
+import main.java.src.annotations.*;
 
 import java.lang.reflect.Field;
 import java.sql.Date;
@@ -32,10 +30,8 @@ public class ObjectFactory {
 
         String line;
         while(iterator.hasNext()) {
-//            program.out.print(obj + "\n");
             Field field = iterator.next();
             Class<?> fieldType = field.getType();
-//            System.out.println(fieldType);
             field.setAccessible(true);
             try {
                 if (field.isAnnotationPresent(Complex.class)) {
@@ -68,7 +64,10 @@ public class ObjectFactory {
                         } catch (IllegalArgumentException iae) {
                             throw new NumberFormatException();
                         }
-                        field.set(obj, enumValue);
+                        if(checkValueForRestrictions(field, enumValue))
+                            field.set(obj, enumValue);
+                        else
+                            throw new NumberFormatException();
                     }
                 } else {
                     program.out.print("Enter " + ClT.getSimpleName() + "'s " + field.getName());
@@ -88,8 +87,12 @@ public class ObjectFactory {
                             program.out.print("Sorry we don't know how to interpret " + ClT.getSimpleName() + "'s field " + field.getName() + " with " + fieldType.getSimpleName() + " type(\n");
                             field.set(obj, null);
                         } else {
-                            field.set(obj, convertFunction
-                                    .apply(line));
+                            Object value = convertFunction.apply(line);
+
+                            if(checkValueForRestrictions(field, value))
+                                field.set(obj, value);
+                            else
+                                throw new NumberFormatException();
                         }
                     }
                 }
@@ -102,5 +105,22 @@ public class ObjectFactory {
         }
 
         return obj;
+    }
+
+    private static boolean checkValueForRestrictions(Field field, Object value) {
+        if(!field.isAnnotationPresent(Restriction.class)) return true;
+
+        boolean out = true;
+
+        Restriction restriction = field.getAnnotation(Restriction.class);
+        out &= restriction.filter().getValidation().test(restriction.value(), value);
+
+        if(field.isAnnotationPresent(ExRestriction.class)) {
+            ExRestriction exRestriction = field.getAnnotation(ExRestriction.class);
+            Restriction exArgument = exRestriction.restriction();
+            out &= exArgument.filter().getValidation().test(exArgument.value(), value);
+        }
+
+        return out;
     }
 }
