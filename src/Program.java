@@ -9,16 +9,17 @@ import main.java.src.logic.streams.InputManager;
 import main.java.src.logic.streams.OutputManager;
 import main.java.src.stored.Dragon;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
 
-
+/**
+ * The main file is the link between all systems in the project
+ * Is a singleton
+ */
 public class Program {
 
     public final static String invite = ">>>";
-    public final static String indent = "\t";
 
     private static Program singleton = null;
 
@@ -30,10 +31,17 @@ public class Program {
     private Program() {
     }
 
+    /**
+     * @return Program unique instance
+     */
     public static Program getInstance() {
         return singleton == null ? singleton = new Program() : singleton;
     }
 
+    /**
+     * Parses the given String line as a command and if it is correct executes it
+     * @param line
+     */
     public void parseCommand(String line) {
         line = line.trim();
         if(line.equals("")) return;
@@ -55,9 +63,12 @@ public class Program {
     public static void main(String[] args){
         Program program = Program.getInstance();
 
-//        String filePath = args.length > 0 ? args[0] : "";
-        String filePath = "test2.csv";
-        program.collection.initialize(filePath);
+        String fileName = args.length > 0 ? args[0] : "";
+//        String fileName = "FileJ";
+        Map<String, String> env = System.getenv();
+        String filePath = env.get(fileName);
+//        String filePath = "test2.csv";
+        program.collection.initialize(filePath != null ? filePath : "");
 
         String line;
         while(true) {

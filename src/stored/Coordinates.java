@@ -7,6 +7,9 @@ import main.java.src.logic.data.ValidationMode;
 
 import java.io.Serializable;
 
+/**
+ * One of the stored objects
+ */
 public class Coordinates implements Comparable<Coordinates>, Serializable {
     @Fillable
     @Storable

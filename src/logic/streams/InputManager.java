@@ -1,7 +1,12 @@
 package main.java.src.logic.streams;
 
-import java.io.IOException;
-
+/**
+ * Controls data providing
+ */
 public interface InputManager {
+    /**
+     * Gives next line prom input
+     * @return String line
+     */
     String readLine();
 }

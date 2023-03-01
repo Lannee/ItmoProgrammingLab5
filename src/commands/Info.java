@@ -2,6 +2,9 @@ package main.java.src.commands;
 
 import main.java.src.Program;
 
+/**
+ * Outputs information about the collection to the standard output stream
+ */
 public class Info implements Command {
 
     public static final String[] args = new String[0];

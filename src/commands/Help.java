@@ -3,6 +3,9 @@ package main.java.src.commands;
 import main.java.src.Config;
 import main.java.src.Program;
 
+/**
+ * Displays a list of all available commands
+ */
 public class Help implements Command {
 
 //    public static final String name = "help";

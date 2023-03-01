@@ -1,5 +1,8 @@
 package main.java.src.logic.data;
 
+/**
+ * Says that file has invalid format
+ */
 public class FileFormatException extends Exception {
     public FileFormatException() {
         super();

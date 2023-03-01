@@ -3,7 +3,6 @@ package main.java.src.utils;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +10,9 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Util class for suitable String parsing
+ */
 public class StringConverter {
     public final static Map<Class<?>, Function<String, ?>> methodForType = new HashMap<>();
 

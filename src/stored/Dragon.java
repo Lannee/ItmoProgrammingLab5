@@ -8,6 +8,9 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * One of the stored objects
+ */
 public class Dragon implements Comparable<Dragon>, Serializable {
 
     private static long instances = 0;

@@ -1,5 +1,9 @@
 package main.java.src.commands;
 
+
+/**
+ * Exit program
+ */
 public class Exit implements Command {
 
     private static final String[] args = new String[0];

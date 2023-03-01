@@ -10,7 +10,15 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Function;
 
+/**
+ * Util class for creating objects instances by their classes
+ */
 public class ObjectFactory {
+    /**
+     * Creates object with users interactive input
+     * @param ClT - Class of constructing object
+     * @return final object
+     */
     public static <T> T createObjectInteractively(Class<T> ClT) {
         Program program = Program.getInstance();
         T obj;

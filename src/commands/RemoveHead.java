@@ -3,6 +3,9 @@ package main.java.src.commands;
 import main.java.src.Program;
 import main.java.src.logic.data.DataManager;
 
+/**
+ * Prints the first element of the collection and deletes it
+ */
 public class RemoveHead implements Command {
 
     private static final String[] args = new String[0];

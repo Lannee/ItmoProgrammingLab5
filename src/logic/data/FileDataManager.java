@@ -2,15 +2,17 @@ package main.java.src.logic.data;
 
 import java.io.File;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * DataManager implementation for representation storage as a file
+ * @param <T> - Stored type
+ */
 public abstract class FileDataManager<T extends Comparable<? super T>> implements DataManager<T> {
 
     private final List<T> collection = new LinkedList<>();
@@ -19,6 +21,10 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
     protected BasicFileAttributes attr;
     protected LocalDateTime modification;
 
+    /**
+     * File collection constructor
+     * @param clT - is a type of stored elements
+     */
     public FileDataManager(Class<T> clT){
         this.clT = clT;
     }
@@ -35,15 +41,15 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
 
     @Override
     public String getInfo() {
-        return "Тип хранимых данных : " + clT.getSimpleName() + "\n" +
-                "Размер коллекции : " + collection.size() + "\n" +
-                "Дата инициализации : " + LocalDateTime.ofInstant(
+        return "Stored data type : " + clT.getSimpleName() + "\n" +
+                "Collection size : " + collection.size() + "\n" +
+                "Initialization date : " + LocalDateTime.ofInstant(
                         attr.creationTime()
                                 .toInstant(), ZoneId.systemDefault())
                                         .format(DateTimeFormatter.ofLocalizedDateTime(
                                                 FormatStyle.MEDIUM, FormatStyle.MEDIUM)) + "\n" +
 
-                "Дата последнего изменения : " + modification.format(
+                "Last modification date : " + modification.format(
                         DateTimeFormatter.ofLocalizedDateTime(
                                 FormatStyle.MEDIUM, FormatStyle.MEDIUM));
     }

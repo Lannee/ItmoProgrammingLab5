@@ -7,6 +7,9 @@ import main.java.src.utils.StringConverter;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Print the number of elements whose weight field value is greater than the specified one
+ */
 public class CountGreaterThanWeight implements Command {
 
     private final static String[] args = {"weight"};

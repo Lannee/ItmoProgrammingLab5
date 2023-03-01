@@ -2,6 +2,9 @@ package main.java.src.commands;
 
 import main.java.src.Program;
 
+/**
+ * Prints all the elements of the collection in a string representation
+ */
 public class Show implements Command {
 
     private static final String[] args = new String[0];

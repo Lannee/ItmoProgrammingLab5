@@ -6,6 +6,9 @@ import main.java.src.logic.data.ValidationMode;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * One of the stored objects
+ */
 public class Person implements Comparable<Person>, Serializable {
     @Fillable
     @Storable

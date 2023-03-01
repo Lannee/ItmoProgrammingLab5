@@ -3,6 +3,9 @@ package main.java.src.commands;
 import main.java.src.Program;
 import main.java.src.logic.data.DataManager;
 
+/**
+ * Removes the first element from the collection
+ */
 public class RemoveFirst implements Command {
 
     private final static String[] args = new String[0];

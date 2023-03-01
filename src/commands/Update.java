@@ -5,9 +5,10 @@ import main.java.src.utils.ObjectFactory;
 import main.java.src.utils.StringConverter;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Updates the value of a collection item whose id is equal to the specified one
+ */
 public class Update implements Command {
     public final static String[] args = {"id"};
 

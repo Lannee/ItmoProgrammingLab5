@@ -3,6 +3,9 @@ package main.java.src.commands;
 import main.java.src.Program;
 import main.java.src.utils.ObjectFactory;
 
+/**
+ * Add new element into collection
+ */
 public class Add implements Command {
 
     public final static String[] args = new String[0];

@@ -4,9 +4,11 @@ import main.java.src.Program;
 import main.java.src.utils.StringConverter;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Removes an item from the collection by its id
+ */
 public class RemoveById implements Command {
 
     private static final String[] args = {"id"};

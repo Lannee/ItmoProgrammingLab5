@@ -1,8 +1,12 @@
 package main.java.src.logic.streams;
 
+/**
+ * Controls data output
+ */
 public interface OutputManager {
-
-//    void addMessage(String message);
-
+    /**
+     * Prints given string to OutputStream
+     * @param message
+     */
     void print(String message);
 }

@@ -3,6 +3,9 @@ package main.java.src.commands;
 import main.java.src.Program;
 import main.java.src.utils.ObjectFactory;
 
+/**
+ * Removes all items from the collection that exceed the specified
+ */
 public class RemoveGreater implements Command {
 
     private static final String[] args = new String[0];

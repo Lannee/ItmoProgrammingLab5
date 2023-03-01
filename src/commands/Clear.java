@@ -2,8 +2,10 @@ package main.java.src.commands;
 
 import main.java.src.Program;
 
+/**
+ * Clears the collection
+ */
 public class Clear implements Command {
-
     private final static String[] args = new String[0];
 
     @Override

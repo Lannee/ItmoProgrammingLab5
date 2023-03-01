@@ -4,13 +4,17 @@ import main.java.src.commands.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Configuration file
+ */
 public final class Config {
+    /**
+     * declaredCommands - container for all available commands.
+     * First argument - string name of the command (it must not contain whitespace characters)
+     * Second argument - Command object itself
+ */
     public static final Map<String, Command> declaredCommands = new HashMap<>();
-    /*
-    declaredCommands - container for all available commands.
-    First argument - string name of the command (it must not contain whitespace characters)
-    Second argument - Command object itself
-     */
+
 
     static {
         declaredCommands.put("help", new Help());

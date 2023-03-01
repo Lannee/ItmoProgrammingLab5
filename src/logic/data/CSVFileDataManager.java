@@ -18,6 +18,10 @@ import java.util.Date;
 import java.time.*;
 import java.util.*;
 
+/**
+ * Specific implementation of FileDataManager as a CSV file storage
+ * @param <T> - Stored type
+ */
 public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDataManager<T> {
 
     public CSVFileDataManager(Class<T> clT){
@@ -96,7 +100,7 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
         Integer out = 0;
         Field[] fields = Arrays.stream(cl
                         .getDeclaredFields())
-                        .filter(e -> e.isAnnotationPresent(Fillable.class))
+                        .filter(e -> e.isAnnotationPresent(Storable.class))
                         .toArray(Field[]::new);
 
         for(Field field : fields) {
@@ -159,15 +163,19 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                 }
                 values.addAll(Arrays.asList(exLevel));
             } else {
-                if(field.getType().isInstance(new Date(0))) {
-                    fieldValue = ((Date)fieldValue).toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate();
-                }
-                if(field.getType().isInstance(ZonedDateTime.now())) {
-                    fieldValue = ((ZonedDateTime)fieldValue).toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDateTime();
+                if(fieldValue == null) {
+                    fieldValue = "null";
+                } else {
+                    if(field.getType().isInstance(new Date(0))) {
+                        fieldValue = ((Date) fieldValue).toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
+                    }
+                    if(field.getType().isInstance(ZonedDateTime.now())) {
+                        fieldValue = ((ZonedDateTime) fieldValue).toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime();
+                    }
                 }
                 values.add(fieldValue.toString());
             }
@@ -231,9 +239,16 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                 if(fieldType.isEnum()) {
                     Object enumValue;
                     try {
-                        enumValue = Enum.valueOf((Class<Enum>) fieldType, values[i]);
+                        if(values[i].equals("null"))
+                            if(field.isAnnotationPresent(Nullable.class))
+                                enumValue = null;
+                            else
+                                throw new ReflectiveOperationException();
+                        else
+                            enumValue = Enum.valueOf((Class<Enum>) fieldType, values[i]);
                     } catch (IllegalArgumentException iae) {
                         throw new ReflectiveOperationException();
+//                        throw new RuntimeException(iae);
                     }
                     field.set(obj, enumValue);
                 } else {

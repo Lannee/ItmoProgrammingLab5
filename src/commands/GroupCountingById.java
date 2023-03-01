@@ -7,6 +7,9 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Groups the elements of the collection by the value of the id field, displays the number of elements in each group
+ */
 public class GroupCountingById implements Command {
     private static final String[] args = new String[0];
     @Override

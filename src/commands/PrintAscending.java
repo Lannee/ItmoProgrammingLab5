@@ -5,6 +5,9 @@ import main.java.src.Program;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Prints the elements of the collection in ascending order
+ */
 public class PrintAscending implements Command {
 
     private static final String[] args = new String[0];
