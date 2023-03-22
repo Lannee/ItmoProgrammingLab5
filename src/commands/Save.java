@@ -1,6 +1,6 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
+import main.java.src.logic.data.Receiver;
 
 /**
  * Saves the collection to the file
@@ -8,11 +8,17 @@ import main.java.src.Program;
 public class Save implements Command {
 
     private static final String[] args = new String[0];
+
+    private final Receiver receiver;
+
+    public Save(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-        program.collection.save();
+        checkArgsConformity(args);
+        receiver.saveCollection();
     }
 
     @Override

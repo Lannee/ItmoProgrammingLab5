@@ -1,6 +1,6 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
+import main.java.src.logic.data.Receiver;
 
 /**
  * Clears the collection
@@ -8,13 +8,16 @@ import main.java.src.Program;
 public class Clear implements Command {
     private final static String[] args = new String[0];
 
+    private final Receiver receiver;
+
+    public Clear(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-        program.out.print("Are you sure you want to clear the collection (y/n) : ");
-        if(program.in.readLine().equals("y"))
-            program.collection.clear();
+        checkArgsConformity(args);
+        receiver.clear();
     }
 
     @Override

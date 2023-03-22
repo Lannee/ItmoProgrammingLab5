@@ -1,6 +1,7 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
+import main.java.src.Client;
+import main.java.src.logic.data.Receiver;
 
 /**
  * Outputs information about the collection to the standard output stream
@@ -9,13 +10,16 @@ public class Info implements Command {
 
     public static final String[] args = new String[0];
 
-    public Info() {}
+    private final Receiver receiver;
+
+    public Info(Receiver receiver) {
+        this.receiver = receiver;
+    }
 
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args(), args);
-        program.out.print(program.collection.getInfo() + "\n");
+        checkArgsConformity(args);
+        Client.out.print(receiver.getInfo() + "\n");
     }
 
     @Override

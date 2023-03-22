@@ -1,9 +1,10 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
+import main.java.src.Client;
+import main.java.src.logic.data.Receiver;
 
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * Prints the elements of the collection in ascending order
@@ -11,12 +12,21 @@ import java.util.List;
 public class PrintAscending implements Command {
 
     private static final String[] args = new String[0];
+
+    private final Receiver receiver;
+
+    public PrintAscending(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-        List<?> collection = program.collection.getElements(Comparator.naturalOrder());
-        collection.forEach(e -> program.out.print(e + "\n"));
+        checkArgsConformity(args);
+        Arrays.stream(
+                receiver.
+                        getStringElements(Comparator.naturalOrder())
+                ).
+                forEach(e -> Client.out.print(e + "\n"));
     }
 
     @Override

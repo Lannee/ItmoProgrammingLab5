@@ -2,6 +2,7 @@ package main.java.src.stored;
 
 import main.java.src.annotations.*;
 import main.java.src.logic.data.ValidationMode;
+import main.java.src.utils.ObjectUtils;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -35,17 +36,16 @@ public class Person implements Comparable<Person>, Serializable {
     @Override
     public int compareTo(Person o) {
         int compare;
-        if((compare = passportID.compareTo(o.passportID)) != 0) {
+        if((compare = ObjectUtils.saveCompare(passportID, o.passportID)) != 0)
             return compare;
-        } else if((compare = name.compareTo(o.name)) != 0){
+        else if((compare = ObjectUtils.saveCompare(name, o.name)) != 0)
             return compare;
-        } else if((compare = (int)(height - o.height)) != 0){
+        else if((compare = ObjectUtils.saveCompare(birthday, o.birthday)) != 0)
             return compare;
-        } else if((compare = birthday.compareTo(o.birthday)) != 0){
+        else if((compare = ObjectUtils.saveCompare(height, o.height)) != 0)
             return compare;
-        } else {
-            return hairColor.compareTo(o.hairColor);
-        }
+        else
+            return ObjectUtils.saveCompare(hairColor, o.hairColor);
     }
 
     @Override

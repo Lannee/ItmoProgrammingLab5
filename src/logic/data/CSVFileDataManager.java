@@ -2,9 +2,8 @@ package main.java.src.logic.data;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import main.java.src.Program;
+import main.java.src.Client;
 import main.java.src.annotations.Complex;
-import main.java.src.annotations.Fillable;
 import main.java.src.annotations.Nullable;
 import main.java.src.annotations.Storable;
 import main.java.src.utils.StringConverter;
@@ -30,9 +29,6 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
 
     @Override
     public void initialize(String filePath) {
-        Program program = Program.getInstance();
-        Class<?> clT = program.collection.getClT();
-
         File csvFile = new File(filePath);
 
         List<String[]> csvContent;
@@ -57,41 +53,37 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
 
             for(String[] values : csvContent) {
                 try {
-                    program.collection.add(program
-                                    .collection
-                                    .getClT()
-                                    .cast(createObject(clT, headers, values)));
+                    collection.add(getClT()
+                                    .cast(createObject(getClT(), headers, values)));
 
                 } catch (ReflectiveOperationException e) {
-                    program.out.print("Unable to create an object\n");
+                    Client.out.print("Unable to create an object\n");
                 }
             }
 
         } catch (FileFormatException e) {
-            program.out.print(e.getMessage() + ". Do you want to rewrite this file (y/n) : ");
-            if(!program.in.readLine().equals("y")) {
+            Client.out.print(e.getMessage() + ". Do you want to rewrite this file (y/n) : ");
+            if(!Client.in.readLine().equals("y")) {
                 System.exit(0);
             }
 
         } catch (IOException e) {
-            program.out.print("Unable to initialize collection");
+            Client.out.print("Unable to initialize collection");
             System.exit(1);
         }
     }
 
     @Override
     public void save() {
-        Program program = Program.getInstance();
-        Class<?> clT = program.collection.getClT();
-        List<String[]> toCSV = new ArrayList<>(program.collection.size() + 1);
+        List<String[]> toCSV = new ArrayList<>(collection.size() + 1);
 
-        toCSV.add(getHeaders(clT));
-        program.collection.forEach(e -> toCSV.add(getFieldsValues(e)));
+        toCSV.add(getHeaders(getClT()));
+        forEach(e -> toCSV.add(getFieldsValues(e)));
 
         try(CSVWriter writer = new CSVWriter(new FileWriter(super.file))) {
             writer.writeAll(toCSV);
         } catch (IOException e) {
-            program.out.print("Unable to save collection into the file.\n");
+            Client.out.print("Unable to save collection into the file.\n");
         }
 
     }

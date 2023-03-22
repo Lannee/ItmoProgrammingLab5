@@ -1,6 +1,6 @@
 package main.java.src.utils;
 
-import main.java.src.Program;
+import main.java.src.Client;
 import main.java.src.annotations.*;
 
 import java.lang.reflect.Field;
@@ -13,14 +13,13 @@ import java.util.function.Function;
 /**
  * Util class for creating objects instances by their classes
  */
-public class ObjectFactory {
+public class ObjectUtils {
     /**
      * Creates object with users interactive input
      * @param ClT - Class of constructing object
      * @return final object
      */
     public static <T> T createObjectInteractively(Class<T> ClT) {
-        Program program = Program.getInstance();
         T obj;
         try {
             obj = ClT.getConstructor().newInstance();
@@ -44,9 +43,9 @@ public class ObjectFactory {
             try {
                 if (field.isAnnotationPresent(Complex.class)) {
                     if(field.isAnnotationPresent(Nullable.class)) {
-                        program.out.print("Do you want to create " + fieldType.getSimpleName() + " object (y/n) : ");
+                        Client.out.print("Do you want to create " + fieldType.getSimpleName() + " object (y/n) : ");
 
-                        switch (program.in.readLine()) {
+                        switch (Client.in.readLine()) {
                             case "y" -> field.set(obj, createObjectInteractively(fieldType));
                             case "n" -> field.set(obj, null);
                             default -> throw new NumberFormatException();
@@ -58,11 +57,11 @@ public class ObjectFactory {
                 } else if (fieldType.isEnum()) {
                     List<?> enumConstants = Arrays.asList(fieldType.getEnumConstants());
 
-                    program.out.print("Enter " + field.getName() + "(");
-                    program.out.print(String.join(", ", enumConstants.stream().map(Object::toString).toArray(String[]::new)));
-                    program.out.print(") : ");
+                    Client.out.print("Enter " + field.getName() + "(");
+                    Client.out.print(String.join(", ", enumConstants.stream().map(Object::toString).toArray(String[]::new)));
+                    Client.out.print(") : ");
 
-                    line = program.in.readLine();
+                    line = Client.in.readLine();
                     if(field.isAnnotationPresent(Nullable.class) && line.equals("")) {
                         field.set(obj, null);
                     } else {
@@ -78,10 +77,10 @@ public class ObjectFactory {
                             throw new NumberFormatException();
                     }
                 } else {
-                    program.out.print("Enter " + ClT.getSimpleName() + "'s " + field.getName());
-                    if(fieldType.isInstance(new Date(0))) program.out.print(" (in format XXXX-XX-XX year-month-day)");
-                    program.out.print(" : ");
-                    line = program.in.readLine();
+                    Client.out.print("Enter " + ClT.getSimpleName() + "'s " + field.getName());
+                    if(fieldType.isInstance(new Date(0))) Client.out.print(" (in format XXXX-XX-XX year-month-day)");
+                    Client.out.print(" : ");
+                    line = Client.in.readLine();
 
                     if(line.equals("")) {
                         if(field.isAnnotationPresent(Nullable.class)) {
@@ -92,7 +91,7 @@ public class ObjectFactory {
                     } else {
                         Function<String, ?> convertFunction = StringConverter.methodForType.get(fieldType);
                         if (convertFunction == null) {
-                            program.out.print("Sorry we don't know how to interpret " + ClT.getSimpleName() + "'s field " + field.getName() + " with " + fieldType.getSimpleName() + " type(\n");
+                            Client.out.print("Sorry we don't know how to interpret " + ClT.getSimpleName() + "'s field " + field.getName() + " with " + fieldType.getSimpleName() + " type(\n");
                             field.set(obj, null);
                         } else {
                             Object value = convertFunction.apply(line);
@@ -105,8 +104,8 @@ public class ObjectFactory {
                     }
                 }
             } catch (NumberFormatException nfe) {
-                program.out.print("Invalid value for field with " + fieldType.getSimpleName() + " type. Please try again.\n");
-                field = iterator.previous();
+                Client.out.print("Invalid value for field with " + fieldType.getSimpleName() + " type. Please try again.\n");
+                iterator.previous();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -130,5 +129,25 @@ public class ObjectFactory {
         }
 
         return out;
+    }
+
+    public static void setFieldValue(Object o, String fieldName, Object value) throws NoSuchFieldException, IllegalArgumentException {
+        Field field = o.getClass().getField(fieldName);
+        field.setAccessible(true);
+
+        try {
+            field.set(o, value);
+        } catch (IllegalAccessException e) { }
+    }
+
+    public static <T extends Comparable<T>> int saveCompare(T o1, T o2) {
+        if(o1 == null & o2 == null)
+            return 0;
+        else if(o1 == null & o2 != null)
+            return -1;
+        else if(o1 != null & o2 == null)
+            return 1;
+        else
+            return o1.compareTo(o2);
     }
 }

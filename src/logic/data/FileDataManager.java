@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  */
 public abstract class FileDataManager<T extends Comparable<? super T>> implements DataManager<T> {
 
-    private final List<T> collection = new LinkedList<>();
+    protected final List<T> collection = new LinkedList<>();
     private final Class<T> clT;
     protected File file;
     protected BasicFileAttributes attr;

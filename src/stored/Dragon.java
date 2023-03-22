@@ -2,6 +2,7 @@ package main.java.src.stored;
 
 import main.java.src.annotations.*;
 import main.java.src.logic.data.ValidationMode;
+import main.java.src.utils.ObjectUtils;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -57,22 +58,20 @@ public class Dragon implements Comparable<Dragon>, Serializable {
     @Override
     public int compareTo(Dragon o) {
         int compare;
-        if(age != null & o.age != null & (compare = age.compareTo(o.age)) != 0) {
+        if((compare = ObjectUtils.saveCompare(age, o.age)) != 0)
             return compare;
-        } else if((compare = name.compareTo(o.name)) != 0){
+        else if((compare = ObjectUtils.saveCompare(name, o.name)) != 0)
             return compare;
-        } else if((compare = coordinates.compareTo(o.coordinates)) != 0){
+        else if((compare = ObjectUtils.saveCompare(coordinates, o.coordinates)) != 0)
             return compare;
-        } else if((compare = wingspan.compareTo(o.wingspan)) != 0){
+        else if((compare = ObjectUtils.saveCompare(wingspan, o.wingspan)) != 0)
             return compare;
-        } else if((compare = (int)(weight - o.weight)) != 0){
+        else if((compare = ObjectUtils.saveCompare(weight, o.weight)) != 0)
             return compare;
-        } else if((compare = color.compareTo(o.color)) != 0){
+        else if((compare = ObjectUtils.saveCompare(color, o.color)) != 0)
             return compare;
-        } else {
-            return killer.compareTo(o.killer);
-        }
-//        return (int) (id - o.id);
+        else
+            return ObjectUtils.saveCompare(killer, o.killer);
     }
 
     @Override

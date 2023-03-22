@@ -1,26 +1,24 @@
 package main.java.src.commands;
 
-import main.java.src.Config;
-import main.java.src.Program;
+import main.java.src.Client;
 
 /**
  * Displays a list of all available commands
  */
 public class Help implements Command {
 
-//    public static final String name = "help";
     private static final String[] args = new String[0];
 
-    public Help() {}
+    private final Invoker invoker;
+
+    public Help(Invoker invoker) {
+        this.invoker = invoker;
+    }
 
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(Help.args, args);
-        Config.declaredCommands.forEach((key, value) -> {
-            String out = value.args().length == 0 ? key : key + " [" + String.join(", ", value.args()) + "]";
-            program.out.print(out + " (" + value.getDescription() + ")\n");
-        });
+        checkArgsConformity(args);
+        Client.out.print(invoker.commandsInfo());
     }
 
     @Override

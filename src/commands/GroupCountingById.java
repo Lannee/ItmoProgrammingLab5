@@ -1,10 +1,8 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
-import main.java.src.utils.StringConverter;
+import main.java.src.Client;
+import main.java.src.logic.data.Receiver;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -12,37 +10,22 @@ import java.util.Map;
  */
 public class GroupCountingById implements Command {
     private static final String[] args = new String[0];
+
+    private final Receiver receiver;
+
+    public GroupCountingById(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-
-        Map<Long, Integer> groups = new HashMap<>();
-
-        Field idField;
+        checkArgsConformity(args);
         try {
-            idField = program.collection.getClT().getDeclaredField("id");
-            idField.setAccessible(true);
+            Map<Object, Integer> groups = receiver.groupByField("id");
+            groups.forEach((u, v) -> Client.out.print(u + " : " + v + "\n"));
         } catch (NoSuchFieldException e) {
-            program.out.print("Stored type does not support this command\n");
-            return;
+            Client.out.print("Stored type does not support this command\n");
         }
-
-        Long id;
-        for(Object element : program.collection.getElements()) {
-            try {
-                id = idField.getLong(element);
-                if(groups.containsKey(id)) {
-                    Integer value = groups.get(id);
-                    groups.put(id, ++value);
-                } else {
-                    groups.put(id, 1);
-                }
-
-            } catch (IllegalAccessException e) {}
-        }
-
-        groups.forEach((u, v) -> program.out.print(u + " : " + v + "\n"));
     }
 
     @Override

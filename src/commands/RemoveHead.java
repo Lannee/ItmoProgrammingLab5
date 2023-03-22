@@ -1,7 +1,7 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
-import main.java.src.logic.data.DataManager;
+import main.java.src.Client;
+import main.java.src.logic.data.Receiver;
 
 /**
  * Prints the first element of the collection and deletes it
@@ -9,17 +9,25 @@ import main.java.src.logic.data.DataManager;
 public class RemoveHead implements Command {
 
     private static final String[] args = new String[0];
+
+    private final Receiver receiver;
+
+    public RemoveHead(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-        DataManager<?> collection = program.collection;
-        if(collection.size() == 0) {
-            program.out.print("Cannot remove as collection is empty\n");
+        checkArgsConformity(args);
+        if(receiver.collectionSize() == 0) {
+            Client.out.print("Cannot remove since the collection is empty\n");
         } else {
-            Object first = collection.get(0);
-            program.out.print(first + "\n");
-            collection.remove(first);
+            Object head = receiver.getElementByIndex(0);
+            if(receiver.removeFromCollection(head)) {
+                Client.out.print(head + "\n");
+            } else {
+                Client.out.print("Unable to remove element from the collection\n");
+            }
         }
     }
 

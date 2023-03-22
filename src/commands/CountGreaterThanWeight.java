@@ -1,11 +1,7 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
-import main.java.src.logic.data.DataManager;
-import main.java.src.utils.StringConverter;
-
-import java.lang.reflect.Field;
-import java.util.concurrent.atomic.AtomicLong;
+import main.java.src.Client;
+import main.java.src.logic.data.Receiver;
 
 /**
  * Print the number of elements whose weight field value is greater than the specified one
@@ -14,31 +10,21 @@ public class CountGreaterThanWeight implements Command {
 
     private final static String[] args = {"weight"};
 
+    private final Receiver receiver;
+
+    public CountGreaterThanWeight(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-
-        DataManager<?> collection = program.collection;
-        AtomicLong counter = new AtomicLong();
+        checkArgsConformity(args);
         try {
-            Field weightField = collection.getClT().getDeclaredField(args()[0]);
-            weightField.setAccessible(true);
-            Comparable givenValue = (Comparable) StringConverter.methodForType.get(weightField.getType()).apply(args[0]);
-            collection.forEach(e -> {
-                try {
-                    if(givenValue.compareTo((Comparable)weightField.get(e)) < 0) counter.getAndIncrement();
-                } catch (IllegalAccessException impossible) { }
-            });
-
-            program.out.print(counter + "\n");
-
-        } catch (NoSuchFieldException e) {
-            program.out.print("Stored type does not have " + args()[0] + " field\n");
+            int amount = receiver.countCompareToValueByField(args()[0], args[0], (u, v) -> -u.compareTo(v));
+            Client.out.print(amount + "\n");
         } catch (NumberFormatException e) {
-            program.out.print("Incorrect given value\n");
+            Client.out.print("Incorrect given value\n");
         }
-
     }
 
     @Override

@@ -1,6 +1,10 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
+import main.java.src.Client;
+import main.java.src.logic.data.Receiver;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Prints all the elements of the collection in a string representation
@@ -8,11 +12,22 @@ import main.java.src.Program;
 public class Show implements Command {
 
     private static final String[] args = new String[0];
+
+    private final Receiver receiver;
+
+    public Show(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-        program.collection.forEach(e -> program.out.print(e + "\n"));
+        checkArgsConformity(args);
+        checkArgsConformity(args);
+        Arrays.stream(
+                        receiver.
+                                getStringElements(Comparator.reverseOrder())
+                ).
+                forEach(e -> Client.out.print(e + "\n"));
     }
 
     @Override

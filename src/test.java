@@ -1,12 +1,7 @@
-package src;
-
-import java.util.Map;
+package main.java.src;
 
 public class test {
     public static void main(String[] args) {
-        Map<String, String> arv = System.getenv();
-
-        arv.forEach((key, value) -> System.out.println(key + ": " + value));
-//        System.out.println(arv.get("File"));
+        Integer i = Integer.parseInt("f");
     }
 }

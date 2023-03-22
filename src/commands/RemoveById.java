@@ -1,10 +1,8 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
+import main.java.src.Client;
+import main.java.src.logic.data.Receiver;
 import main.java.src.utils.StringConverter;
-
-import java.lang.reflect.Field;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Removes an item from the collection by its id
@@ -12,40 +10,29 @@ import java.util.concurrent.atomic.AtomicReference;
 public class RemoveById implements Command {
 
     private static final String[] args = {"id"};
+
+    private final Receiver receiver;
+
+    public RemoveById(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-        Long id;
-        try {
-            id = (Long) StringConverter.methodForType.get(Long.class).apply(args[0]);
-        } catch (NumberFormatException e) {
-            program.out.print("Incorrect argument value\n");
-            return;
-        }
+        checkArgsConformity(args);
 
-        Field idField;
         try {
-            idField = program.collection.getClT().getDeclaredField(args()[0]);
+            Long id = (Long) StringConverter.methodForType.get(Long.class).apply(args[0]);
+            Object obj = receiver.getElementByFieldValue(args()[0], id);
+            if(receiver.removeFromCollection(obj)) {
+                Client.out.print("Object with " + args()[0] + " " + id + " was successfully removed\n");
+            } else {
+                Client.out.print("Unable to remove element from the collection. No element with such " + args()[0] + "\n");
+            }
         } catch (NoSuchFieldException e) {
-            program.out.print("Stored type does not support this command\n");
-            return;
-        }
-
-        idField.setAccessible(true);
-
-        AtomicReference<Object> element = new AtomicReference<>();
-        program.collection.forEach(e -> {
-            try {
-                if(idField.get(e).equals(id)) {
-                    element.set(e);
-                }
-            } catch (IllegalAccessException ex) {}
-        });
-
-        if(program.collection.remove(element.get())) {}
-        else {
-            program.out.print("Unable to remove object\n");
+            Client.out.print("Stored type does not support this command\n");
+        } catch (NumberFormatException e) {
+            Client.out.print("Invalid command argument\n");
         }
     }
 

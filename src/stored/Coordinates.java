@@ -4,6 +4,7 @@ import main.java.src.annotations.Fillable;
 import main.java.src.annotations.Restriction;
 import main.java.src.annotations.Storable;
 import main.java.src.logic.data.ValidationMode;
+import main.java.src.utils.ObjectUtils;
 
 import java.io.Serializable;
 
@@ -24,11 +25,10 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
     @Override
     public int compareTo(Coordinates o) {
         int compare;
-        if((compare = (int)(x - o.x)) != 0) {
+        if((compare = ObjectUtils.saveCompare(x, o.x)) != 0)
             return compare;
-        } else {
-            return y.compareTo(o.y);
-        }
+        else
+            return ObjectUtils.saveCompare(y, o.y);
     }
 
     @Override

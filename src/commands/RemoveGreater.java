@@ -1,7 +1,7 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
-import main.java.src.utils.ObjectFactory;
+import main.java.src.logic.data.Receiver;
+import main.java.src.utils.ObjectUtils;
 
 /**
  * Removes all items from the collection that exceed the specified
@@ -9,18 +9,18 @@ import main.java.src.utils.ObjectFactory;
 public class RemoveGreater implements Command {
 
     private static final String[] args = new String[0];
+
+    private final Receiver receiver;
+
+    public RemoveGreater(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-
-        Object obj = ObjectFactory.createObjectInteractively(program.collection.getClT());
-
-        program.collection.forEach(e -> {
-            if(e.compareTo(program.collection.getClT().cast(obj)) > 0) {
-                program.collection.remove(e);
-            }
-        });
+        checkArgsConformity(args);
+        Object obj = ObjectUtils.createObjectInteractively(receiver.getStoredType());
+        receiver.removeOn(e -> e.compareTo(receiver.getStoredType().cast(obj)) > 0);
     }
 
     @Override

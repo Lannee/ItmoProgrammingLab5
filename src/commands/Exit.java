@@ -10,7 +10,7 @@ public class Exit implements Command {
 
     @Override
     public void execute(String[] args) {
-        Command.checkArgsConformity(Exit.args, args);
+        checkArgsConformity(args);
         System.exit(0);
     }
 

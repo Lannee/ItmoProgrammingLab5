@@ -1,7 +1,6 @@
 package main.java.src.commands;
 
-import main.java.src.Program;
-import main.java.src.utils.ObjectFactory;
+import main.java.src.logic.data.Receiver;
 
 /**
  * Add new element into collection
@@ -10,17 +9,16 @@ public class Add implements Command {
 
     public final static String[] args = new String[0];
 
+    private final Receiver receiver;
+
+    public Add(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
     @Override
     public void execute(String[] args) {
-        Program program = Program.getInstance();
-        Command.checkArgsConformity(args, args());
-        Class<?> collectionCl = program.collection.getClT();
-        program.collection.add(
-                program.collection.getClT().cast(
-                        ObjectFactory.createObjectInteractively(
-                                program.collection.getClT()
-                        )));
-        program.out.print(collectionCl.getSimpleName() + " was successfully created\n");
+        checkArgsConformity(args);
+        receiver.interactiveAdd();
     }
 
     @Override
