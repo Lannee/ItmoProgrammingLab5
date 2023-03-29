@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Restriction {
     ValidationMode filter();
-    int value();
+    double value();
 }

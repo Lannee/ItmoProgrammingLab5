@@ -6,6 +6,9 @@ import main.java.src.Client;
 import main.java.src.annotations.Complex;
 import main.java.src.annotations.Nullable;
 import main.java.src.annotations.Storable;
+import main.java.src.logic.exceptions.FileFormatException;
+import main.java.src.logic.exceptions.FileReadModeException;
+import main.java.src.utils.ObjectUtils;
 import main.java.src.utils.StringConverter;
 
 import java.io.*;
@@ -23,6 +26,8 @@ import java.util.*;
  */
 public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDataManager<T> {
 
+    private static final String nullValue = "null\u0000";
+
     public CSVFileDataManager(Class<T> clT){
         super(clT);
     }
@@ -37,7 +42,8 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                 new FileInputStream(csvFile));
             CSVReader reader = new CSVReader(isr)) {
 
-            if(!csvFile.exists() || csvFile.isDirectory() || !filePath.endsWith(".csv")) throw new IOException("Incorrect file");
+            if(!csvFile.exists() || csvFile.isDirectory()) throw new FileNotFoundException();
+            if(!csvFile.canRead()) throw new FileReadModeException();
             super.file = csvFile;
             super.attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
             super.modification = LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
@@ -62,13 +68,17 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
             }
 
         } catch (FileFormatException e) {
-            Client.out.print(e.getMessage() + ". Do you want to rewrite this file (y/n) : ");
-            if(!Client.in.readLine().equals("y")) {
+            if(!ObjectUtils.agreement(Client.in, Client.out, e.getMessage() + ". Do you want to rewrite this file (y/n) : ")) {
                 System.exit(0);
             }
-
+        } catch(FileReadModeException frme) {
+            Client.out.print("Cannot read the file\n");
+            System.exit(3);
+        } catch (FileNotFoundException fnfe) {
+            Client.out.print("File does not exist or it is a directory\n");
+            System.exit(2);
         } catch (IOException e) {
-            Client.out.print("Unable to initialize collection");
+            Client.out.print("Unable to initialize collection\n");
             System.exit(1);
         }
     }
@@ -149,14 +159,14 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
             if(field.isAnnotationPresent(Complex.class)) {
                 String[] exLevel = new String[countObjectsFields(field.getType())];
                 if(field.isAnnotationPresent(Nullable.class) && fieldValue == null) {
-                    Arrays.fill(exLevel, "null");
+                    Arrays.fill(exLevel, nullValue);
                 } else {
                     exLevel = getFieldsValues(fieldValue);
                 }
                 values.addAll(Arrays.asList(exLevel));
             } else {
                 if(fieldValue == null) {
-                    fieldValue = "null";
+                    fieldValue = nullValue;
                 } else {
                     if(field.getType().isInstance(new Date(0))) {
                         fieldValue = ((Date) fieldValue).toInstant()
@@ -231,7 +241,7 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                 if(fieldType.isEnum()) {
                     Object enumValue;
                     try {
-                        if(values[i].equals("null"))
+                        if(values[i].equals(nullValue))
                             if(field.isAnnotationPresent(Nullable.class))
                                 enumValue = null;
                             else
@@ -245,7 +255,7 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                     field.set(obj, enumValue);
                 } else {
                     String value = values[i];
-                    if(value.equals("null")) {
+                    if(value.equals(nullValue)) {
                         if(!field.isAnnotationPresent(Nullable.class)) return null;
                         field.set(obj, null);
                     } else {

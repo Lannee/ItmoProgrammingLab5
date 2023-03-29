@@ -48,8 +48,7 @@ public class Receiver {
     }
 
     public void clear() {
-        Client.out.print("Are you sure you want to clear the collection (y/n) : ");
-        if(Client.in.readLine().equals("y"))
+        if(ObjectUtils.agreement(Client.in, Client.out, "Are you sure you want to clear the collection (y/n) : "))
             collection.clear();
     }
 

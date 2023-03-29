@@ -17,10 +17,12 @@ public class Person implements Comparable<Person>, Serializable {
     @Nullable
     @Fillable
     @Storable
+    @Restriction(filter = ValidationMode.LOWER_THAN_CURRENT_DATE, value = 0)
+    @ExRestriction(restriction = @Restriction(filter = ValidationMode.MIN_DATE, value = 0))
     private java.util.Date birthday; //Поле может быть null
     @Fillable
     @Storable
-    @Restriction(filter = ValidationMode.LOW_NUMERIC_BOUND, value = 0)
+    @Restriction(filter = ValidationMode.LOW_NUMERIC_BOUND, value = 0.001d)
     private float height; //Значение поля должно быть больше 0
     @Fillable
     @Storable

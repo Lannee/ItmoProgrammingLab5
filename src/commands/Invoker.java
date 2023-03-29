@@ -17,6 +17,8 @@ public class Invoker {
 
     private final Map<String, Integer> files = new HashMap<>();
 
+    private Integer recursionDepth = 1;
+
     public Invoker(Receiver receiver) {
         this.receiver = receiver;
         declaredCommands.put("help", new Help(this));
@@ -41,12 +43,22 @@ public class Invoker {
         if(files.containsKey(file)) {
             Integer value = files.get(file);
             if(value >= 5) {
-                Client.out.print("Recursion was cached. While executing file " + file + "\n");
+                Client.out.print("Recursion was cached. After executing file " + file + " " + recursionDepth + " times\n");
                 return;
             }
             files.put(file, ++value);
         } else {
             files.put(file, 1);
+            if(files.size() == 1) {
+                int input = 0;
+                do {
+                    try {
+                        Client.out.print("Please enter recursion depth (1, 50) : ");
+                        input = Integer.parseInt(Client.in.readLine());
+                    } catch (NumberFormatException ignored) {}
+                } while (input < 1 || input > 50);
+                recursionDepth = input;
+            }
         }
 
         try(InputStream fileInputStream = new FileInputStream(file);
@@ -85,8 +97,8 @@ public class Invoker {
         if(words.length == 1) { args = new String[0]; }
         else { args = Arrays.copyOfRange(words, 1, words.length); }
 
-        if(declaredCommands.containsKey(command)) {
-            declaredCommands.get(command).execute(args);
+        if(declaredCommands.containsKey(command.toLowerCase())) {
+            declaredCommands.get(command.toLowerCase()).execute(args);
         } else {
             Client.out.print("Unknown command " + command + ". Type help to get information about all commands.\n");
         }

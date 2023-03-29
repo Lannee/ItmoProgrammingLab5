@@ -30,16 +30,16 @@ public class Dragon implements Comparable<Dragon>, Serializable {
     @Nullable
     @Fillable
     @Storable
-    @Restriction(filter = ValidationMode.LOW_NUMERIC_BOUND, value = 0)
+    @Restriction(filter = ValidationMode.LOW_NUMERIC_BOUND, value = 1)
     private Long age; //Значение поля должно быть больше 0, Поле может быть null
     @Nullable
     @Fillable
     @Storable
-    @Restriction(filter = ValidationMode.LOW_NUMERIC_BOUND, value = 0)
+    @Restriction(filter = ValidationMode.LOW_NUMERIC_BOUND, value = 1)
     private Long wingspan; //Значение поля должно быть больше 0, Поле может быть null
     @Fillable
     @Storable
-    @Restriction(filter = ValidationMode.LOW_NUMERIC_BOUND, value = 0)
+    @Restriction(filter = ValidationMode.LOW_NUMERIC_BOUND, value = 0.001d)
     private float weight; //Значение поля должно быть больше 0
     @Fillable
     @Storable

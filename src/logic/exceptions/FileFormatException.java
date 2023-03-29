@@ -1,4 +1,4 @@
-package main.java.src.logic.data;
+package main.java.src.logic.exceptions;
 
 /**
  * Says that file has invalid format
