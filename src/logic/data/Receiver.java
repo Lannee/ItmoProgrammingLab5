@@ -75,7 +75,7 @@ public class Receiver {
             Comparable givenValue = (Comparable) StringConverter.methodForType.get(field.getType()).apply(value);
             for(Object element : collection.getElements()) {
                 try {
-                    if(comparator.compare(givenValue, (Comparable)field.get(element)) < 0) counter++;
+                    if(comparator.compare(givenValue, (Comparable)field.get(element)) > 0) counter++;
                 } catch (IllegalAccessException impossible) { }
             }
 
