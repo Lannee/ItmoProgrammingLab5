@@ -22,7 +22,8 @@ public class RemoveFirst implements Command {
         if(receiver.collectionSize() == 0) {
             Client.out.print("Cannot remove since the collection is empty\n");
         } else {
-            if(receiver.removeOn(e -> receiver.getElementByIndex(0) == e)) {
+            Object firstElement = receiver.getElementByIndex(0);
+            if(receiver.removeOn(e -> firstElement == e)) {
                 Client.out.print("First object was successfully removed\n");
             } else {
                 Client.out.print("Unable to remove element from the collection\n");
