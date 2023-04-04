@@ -2,26 +2,28 @@ package main.java.src.utils;
 
 import main.java.src.Client;
 import main.java.src.annotations.*;
+import main.java.src.logic.data.CSVFileDataManager;
 import main.java.src.logic.data.ValidationMode;
 import main.java.src.logic.exceptions.FieldRestrictionException;
 import main.java.src.logic.exceptions.NullFieldValueException;
 import main.java.src.logic.streams.InputManager;
 import main.java.src.logic.streams.OutputManager;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Date;
+import java.time.ZonedDateTime;
+import java.util.*;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.function.Function;
 
 /**
  * Util class for creating objects instances by their classes
  */
 public class ObjectUtils {
+
+    public static final String nullValue = "null\u2800";
     /**
      * Creates object with users interactive input
      * @param ClT - Class of constructing object
@@ -225,5 +227,102 @@ public class ObjectUtils {
                 return agreement(in, out, phrase);
             }
         }
+    }
+
+    public static String[] getHeaders(Class<?> cl, boolean showClassName) {
+        List<String> headers = new LinkedList<String>();
+
+        Field[] fields = getFieldsWithAnnotation(cl, Storable.class);
+
+        StringBuilder header = new StringBuilder();
+        for (Field field : fields) {
+            if(showClassName)
+                header.append(cl.getSimpleName()).append(".");
+            header.append(field.getName());
+            if (field.isAnnotationPresent(Complex.class)) {
+                String[] exLevel = getHeaders(field.getType(), showClassName);
+                for (String exHeader : exLevel) {
+                    exHeader = header + "." + exHeader;
+                    headers.add(exHeader);
+                }
+            } else {
+//                headers.add(header.toString() + " " + field.getType().getName());
+                headers.add(header.toString());
+            }
+            header.append(" ").append(field.getType());
+            header.setLength(0);
+        }
+
+        return headers.toArray(String[]::new);
+    }
+
+    public static String[] getFieldsValues(Object obj) {
+        Class<?> objCl = obj.getClass();
+        List<String> values = new LinkedList<String>();
+
+        Field[] fields = getFieldsWithAnnotation(objCl, Storable.class);
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+            Object fieldValue;
+            try {
+                fieldValue = field.get(obj);
+            } catch (IllegalAccessException ignore) {
+                fieldValue = new Object();
+            }
+
+            if (field.isAnnotationPresent(Complex.class)) {
+                String[] exLevel = new String[countObjectsFields(field.getType())];
+                if (field.isAnnotationPresent(Nullable.class) && fieldValue == null) {
+                    Arrays.fill(exLevel, nullValue);
+                } else {
+                    exLevel = getFieldsValues(fieldValue);
+                }
+                values.addAll(Arrays.asList(exLevel));
+            } else {
+                if (fieldValue == null) {
+                    fieldValue = nullValue;
+                } else {
+                    if (field.getType().isInstance(new Date(0))) {
+                        fieldValue = ((Date) fieldValue).toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
+                    }
+                    if (field.getType().isInstance(ZonedDateTime.now())) {
+                        fieldValue = ((ZonedDateTime) fieldValue).toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime();
+                    }
+                }
+                values.add(fieldValue.toString());
+            }
+        }
+
+        return values.toArray(String[]::new);
+    }
+
+    public static Field[] getFieldsWithAnnotation(Class<?> cl, Class<? extends Annotation> annotation) {
+        return Arrays.stream(cl
+                        .getDeclaredFields())
+                .filter(e -> e.isAnnotationPresent(annotation))
+                .toArray(Field[]::new);
+    }
+
+    private static Integer countObjectsFields(Class<?> cl) {
+        Integer out = 0;
+        Field[] fields = Arrays.stream(cl
+                        .getDeclaredFields())
+                .filter(e -> e.isAnnotationPresent(Storable.class))
+                .toArray(Field[]::new);
+
+        for(Field field : fields) {
+            if(field.isAnnotationPresent(Complex.class)) {
+                out += countObjectsFields(field.getType());
+            } else {
+                out++;
+            }
+        }
+
+        return out;
     }
 }

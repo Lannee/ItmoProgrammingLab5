@@ -2,6 +2,7 @@ package main.java.src.logic.data;
 
 import main.java.src.Client;
 import main.java.src.stored.Dragon;
+import main.java.src.utils.Formatter;
 import main.java.src.utils.ObjectUtils;
 import main.java.src.utils.StringConverter;
 
@@ -61,6 +62,11 @@ public class Receiver {
         return elements.stream().
                 map(Object::toString).
                 toArray(String[]::new);
+    }
+
+    public String getFormattedCollection() {
+        Formatter formatter = new Formatter();
+        return formatter.format(collection.getElements(), collection.getClT());
     }
 
     public String[] getStringElements() {

@@ -5,18 +5,15 @@ import au.com.bytecode.opencsv.CSVWriter;
 import main.java.src.Client;
 import main.java.src.annotations.Complex;
 import main.java.src.annotations.Nullable;
-import main.java.src.annotations.Storable;
 import main.java.src.logic.exceptions.FileFormatException;
 import main.java.src.logic.exceptions.FileReadModeException;
 import main.java.src.utils.ObjectUtils;
 import main.java.src.utils.StringConverter;
 
 import java.io.*;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Date;
 import java.time.*;
 import java.util.*;
 
@@ -25,8 +22,6 @@ import java.util.*;
  * @param <T> - Stored type
  */
 public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDataManager<T> {
-
-    private static final String nullValue = "null\u0000";
 
     public CSVFileDataManager(Class<T> clT){
         super(clT);
@@ -87,8 +82,8 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
     public void save() {
         List<String[]> toCSV = new ArrayList<>(collection.size() + 1);
 
-        toCSV.add(getHeaders(getClT()));
-        forEach(e -> toCSV.add(getFieldsValues(e)));
+        toCSV.add(ObjectUtils.getHeaders(getClT(), true));
+        forEach(e -> toCSV.add(ObjectUtils.getFieldsValues(e)));
 
         try(CSVWriter writer = new CSVWriter(new FileWriter(super.file))) {
             writer.writeAll(toCSV);
@@ -96,101 +91,6 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
             Client.out.print("Unable to save collection into the file.\n");
         }
 
-    }
-
-    private static Integer countObjectsFields(Class<?> cl) {
-        Integer out = 0;
-        Field[] fields = Arrays.stream(cl
-                        .getDeclaredFields())
-                        .filter(e -> e.isAnnotationPresent(Storable.class))
-                        .toArray(Field[]::new);
-
-        for(Field field : fields) {
-            if(field.isAnnotationPresent(Complex.class)) {
-                out += countObjectsFields(field.getType());
-            } else {
-                out++;
-            }
-        }
-
-        return out;
-    }
-
-    private static String[] getHeaders(Class<?> cl) {
-        List<String> headers = new LinkedList<>();
-
-        Field[] fields = getFieldsWithAnnotation(cl, Storable.class);
-
-        StringBuilder header = new StringBuilder();
-        for(Field field : fields) {
-            header.append(cl.getSimpleName()).append(".").append(field.getName());
-            if(field.isAnnotationPresent(Complex.class)) {
-                String[] exLevel = getHeaders(field.getType());
-                for(String exHeader : exLevel) {
-                    exHeader = header + "." + exHeader;
-                    headers.add(exHeader);
-                }
-            } else {
-//                headers.add(header.toString() + " " + field.getType().getName());
-                headers.add(header.toString());
-            }
-            header.append(" ").append(field.getType());
-            header.setLength(0);
-        }
-
-        return headers.toArray(String[]::new);
-    }
-
-    private static String[] getFieldsValues(Object obj) {
-        Class<?> objCl = obj.getClass();
-        List<String> values = new LinkedList<>();
-
-        Field[] fields = getFieldsWithAnnotation(objCl, Storable.class);
-
-        for(Field field : fields) {
-            field.setAccessible(true);
-            Object fieldValue;
-            try {
-                fieldValue = field.get(obj);
-            } catch (IllegalAccessException ignore) {
-                fieldValue = new Object();
-            }
-
-            if(field.isAnnotationPresent(Complex.class)) {
-                String[] exLevel = new String[countObjectsFields(field.getType())];
-                if(field.isAnnotationPresent(Nullable.class) && fieldValue == null) {
-                    Arrays.fill(exLevel, nullValue);
-                } else {
-                    exLevel = getFieldsValues(fieldValue);
-                }
-                values.addAll(Arrays.asList(exLevel));
-            } else {
-                if(fieldValue == null) {
-                    fieldValue = nullValue;
-                } else {
-                    if(field.getType().isInstance(new Date(0))) {
-                        fieldValue = ((Date) fieldValue).toInstant()
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate();
-                    }
-                    if(field.getType().isInstance(ZonedDateTime.now())) {
-                        fieldValue = ((ZonedDateTime) fieldValue).toInstant()
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDateTime();
-                    }
-                }
-                values.add(fieldValue.toString());
-            }
-        }
-
-        return values.toArray(String[]::new);
-    }
-
-    private static Field[] getFieldsWithAnnotation(Class<?> cl, Class<? extends Annotation> annotation) {
-        return Arrays.stream(cl
-                        .getDeclaredFields())
-                .filter(e -> e.isAnnotationPresent(annotation))
-                .toArray(Field[]::new);
     }
 
     private static <T> T createObject(Class<T> cl, String[] headers, String[] values) throws FileFormatException, ReflectiveOperationException {
@@ -241,7 +141,7 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                 if(fieldType.isEnum()) {
                     Object enumValue;
                     try {
-                        if(values[i].equals(nullValue))
+                        if(values[i].equals(ObjectUtils.nullValue))
                             if(field.isAnnotationPresent(Nullable.class))
                                 enumValue = null;
                             else
@@ -255,7 +155,7 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                     field.set(obj, enumValue);
                 } else {
                     String value = values[i];
-                    if(value.equals(nullValue)) {
+                    if(value.equals(ObjectUtils.nullValue)) {
                         if(!field.isAnnotationPresent(Nullable.class)) return null;
                         field.set(obj, null);
                     } else {

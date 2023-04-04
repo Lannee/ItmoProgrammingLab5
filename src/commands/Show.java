@@ -22,12 +22,7 @@ public class Show implements Command {
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
-        checkArgsConformity(args);
-        Arrays.stream(
-                        receiver.
-                                getStringElements(Comparator.reverseOrder())
-                ).
-                forEach(e -> Client.out.print(e + "\n"));
+        Client.out.print(receiver.getFormattedCollection() + "\n");
     }
 
     @Override
