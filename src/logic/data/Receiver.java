@@ -1,16 +1,14 @@
 package main.java.src.logic.data;
 
 import main.java.src.Client;
+import main.java.src.logic.exceptions.CannotCreateObjectException;
 import main.java.src.stored.Dragon;
 import main.java.src.utils.Formatter;
 import main.java.src.utils.ObjectUtils;
 import main.java.src.utils.StringConverter;
 
 import java.lang.reflect.Field;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 
@@ -25,17 +23,21 @@ public class Receiver {
     }
 
     public void interactiveAdd() {
-        collection.add(
-                getStoredType().cast(
-                        ObjectUtils.createObjectInteractively(
-                                collection.getClT()
-                        )));
-        Client.out.print(collection.getClT().getSimpleName() + " was successfully created\n");
+        try {
+            collection.add(
+                    getStoredType().cast(
+                            ObjectUtils.createObjectInteractively(
+                                    collection.getClT()
+                            )));
+            Client.out.print(collection.getClT().getSimpleName() + " was successfully created\n");
+        } catch (CannotCreateObjectException e) {
+            Client.out.print(e.getMessage() + "\n");
+        }
     }
 
     public void interactiveAdd(Long id) {
-        Object obj = ObjectUtils.createObjectInteractively(collection.getClT());
         try {
+            Object obj = ObjectUtils.createObjectInteractively(collection.getClT());
             if(id <= 0) throw new NumberFormatException("Incorrect argument value");
             ObjectUtils.setFieldValue(obj, "id", id);
             collection.add(
@@ -43,13 +45,13 @@ public class Receiver {
             );
         } catch (NoSuchFieldException e) {
             Client.out.print("Stored type does not support this command\n");
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | CannotCreateObjectException e) {
             Client.out.print(e.getMessage() + "\n");
         }
     }
 
     public void clear() {
-        if(ObjectUtils.agreement(Client.in, Client.out, "Are you sure you want to clear the collection (y/n) : "))
+        if(ObjectUtils.agreement(Client.in, Client.out, "Are you sure you want to clear the collection (y/n) : ", false))
             collection.clear();
     }
 
@@ -57,20 +59,12 @@ public class Receiver {
         return collection.getInfo();
     }
 
-    public String[] getStringElements(Comparator<Dragon> sorter) {
-        List<?> elements = collection.getElements(sorter);
-        return elements.stream().
-                map(Object::toString).
-                toArray(String[]::new);
+    public String getFormattedCollection(Comparator<Dragon> sorter) {
+        return Formatter.format(collection.getElements(sorter), collection.getClT());
     }
 
     public String getFormattedCollection() {
-        Formatter formatter = new Formatter();
-        return formatter.format(collection.getElements(), collection.getClT());
-    }
-
-    public String[] getStringElements() {
-        return getStringElements(Comparator.naturalOrder());
+        return getFormattedCollection(Comparator.naturalOrder());
     }
 
     public <T> Integer countCompareToValueByField(String fieldName, String value, Comparator<Comparable<T>> comparator) throws NumberFormatException {
@@ -126,14 +120,25 @@ public class Receiver {
         return collection.remove(o);
     }
 
-    public boolean removeOn(Predicate<Dragon> filter) {
-        boolean wasSomethingDeleted = false;
+    public boolean removeOn(Predicate<Dragon> filter, boolean showRemoved) {
+        if(collection.size() == 0) {
+            Client.out.print("Cannot remove since the collection is empty\n");
+            return false;
+        }
+
+        List<Dragon> removed = new LinkedList<>();
         for(Dragon element : collection.getElements()) {
             if(filter.test(element)) {
-                wasSomethingDeleted = removeFromCollection(element);
+                removed.add(element);
+                removeFromCollection(element);
             }
         }
-        return wasSomethingDeleted;
+
+        if(showRemoved) {
+            Client.out.print(Formatter.format(removed, collection.getClT()) + "\n");
+        }
+
+        return !removed.isEmpty();
     }
 
     public Class<Dragon> getStoredType() {

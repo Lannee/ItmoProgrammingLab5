@@ -22,11 +22,8 @@ public class PrintAscending implements Command {
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
-        Arrays.stream(
-                receiver.
-                        getStringElements(Comparator.naturalOrder())
-                ).
-                forEach(e -> Client.out.print(e + "\n"));
+        Client.out.print(receiver.getFormattedCollection(Comparator.reverseOrder()) + "\n");
+
     }
 
     @Override

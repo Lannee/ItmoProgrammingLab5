@@ -11,7 +11,7 @@ public class Formatter {
     }
 
 
-    public <T> String format(Collection<T> collection, Class<T> clT) {
+    public static <T> String format(Collection<T> collection, Class<T> clT) {
         String[] headers = ObjectUtils.getHeaders(clT, false);
         List<String[]> elements = new ArrayList<>(collection.size());
 

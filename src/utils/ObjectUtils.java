@@ -2,8 +2,7 @@ package main.java.src.utils;
 
 import main.java.src.Client;
 import main.java.src.annotations.*;
-import main.java.src.logic.data.CSVFileDataManager;
-import main.java.src.logic.data.ValidationMode;
+import main.java.src.logic.exceptions.CannotCreateObjectException;
 import main.java.src.logic.exceptions.FieldRestrictionException;
 import main.java.src.logic.exceptions.NullFieldValueException;
 import main.java.src.logic.streams.InputManager;
@@ -23,13 +22,17 @@ import java.util.function.Function;
  */
 public class ObjectUtils {
 
-    public static final String nullValue = "null\u2800";
+    public static final String nullValue = "null\u00A0";
     /**
      * Creates object with users interactive input
      * @param ClT - Class of constructing object
      * @return final object
      */
-    public static <T> T createObjectInteractively(Class<T> ClT) {
+    public static <T> T createObjectInteractively(Class<T> ClT) throws CannotCreateObjectException {
+
+        InputManager inputManager = Client.in;
+        boolean isReadingFromBuffer = !Client.in.isBufferEmpty();
+
         T obj = null;
         try {
             obj = ClT.getConstructor().newInstance();
@@ -41,6 +44,14 @@ public class ObjectUtils {
                 .toArray(Field[]::new);
 
         List<Field> fieldsList = Arrays.asList(fields);
+
+//        if(isReadingFromBuffer && fieldsList.size() > bufferFullness) {
+////            while(!Client.in.isBufferEmpty()) {
+////                Client.in.readLine();
+////            }
+//            throw new CannotCreateObjectException("Invalid number of arguments");
+//        }
+
         ListIterator<Field> iterator = fieldsList.listIterator();
 
         String line;
@@ -51,8 +62,8 @@ public class ObjectUtils {
             try {
                 if (field.isAnnotationPresent(Complex.class)) {
 
-                    if(field.isAnnotationPresent(Nullable.class)) {
-                        if(ObjectUtils.agreement(Client.in, Client.out, "Do you want to create " + fieldType.getSimpleName() + " object (y/n) : ")) {
+                    if (field.isAnnotationPresent(Nullable.class)) {
+                        if (ObjectUtils.agreement(Client.in, Client.out, "Do you want to create " + fieldType.getSimpleName() + " object (y/n) : ", isReadingFromBuffer)) {
                             field.set(obj, createObjectInteractively(fieldType));
                         } else {
                             field.set(obj, null);
@@ -64,14 +75,18 @@ public class ObjectUtils {
                 } else if (fieldType.isEnum()) {
                     List<?> enumConstants = Arrays.asList(fieldType.getEnumConstants());
 
-                    Client.out.print("Enter " + field.getName() + "(");
-                    Client.out.print(String.join(", ", enumConstants.stream().map(Object::toString).toArray(String[]::new)) + ")");
-                    Client.out.print(field.isAnnotationPresent(Nullable.class) ? " (Null)" : "");
-                    Client.out.print(" : ");
+                    if(!isReadingFromBuffer) {
+                        Client.out.print("Enter " + field.getName() + "(");
+                        Client.out.print(String.join(", ", enumConstants.stream().map(Object::toString).toArray(String[]::new)) + ")");
+                        Client.out.print(field.isAnnotationPresent(Nullable.class) ? " (Null)" : "");
+                        Client.out.print(" : ");
+                    }
+
+                    if(isReadingFromBuffer && Client.in.size() == 0) throw new CannotCreateObjectException("Invalid number of arguments");
 
                     line = Client.in.readLine().toUpperCase();
-                    if(line.equals("")) {
-                        if(field.isAnnotationPresent(Nullable.class)) {
+                    if (line.equals("")) {
+                        if (field.isAnnotationPresent(Nullable.class)) {
                             field.set(obj, null);
                         } else {
                             throw new NullFieldValueException();
@@ -83,24 +98,29 @@ public class ObjectUtils {
                         } catch (IllegalArgumentException iae) {
                             throw new NumberFormatException();
                         }
-                        if(checkValueForRestrictions(field, enumValue))
+                        if (checkValueForRestrictions(field, enumValue))
                             field.set(obj, enumValue);
                         else
-                            throw new FieldRestrictionException();
+                            throw new FieldRestrictionException("Entered value has exceeded the allowed restrictions");
                     }
                 } else {
-                    Client.out.print("Enter " + ClT.getSimpleName() + "'s " + field.getName());
-                    if(fieldType.isInstance(new Date()))
-                        Client.out.print(" (in format year-month-day)");
+                    if(!isReadingFromBuffer) {
+                        Client.out.print("Enter " + ClT.getSimpleName() + "'s " + field.getName());
+                        if (fieldType.isInstance(new Date()))
+                            Client.out.print(" (in format year-month-day)");
 
-                    String fieldRestrictions = getFieldRestrictions(field);
-                    Client.out.print(!fieldRestrictions.equals("") ? " (" + fieldRestrictions + ")" : "");
-                    Client.out.print(field.isAnnotationPresent(Nullable.class) ? " (Null)" : "");
-                    Client.out.print(" : ");
+                        String fieldRestrictions = getFieldRestrictions(field);
+                        Client.out.print(!fieldRestrictions.equals("") ? " (" + fieldRestrictions + ")" : "");
+                        Client.out.print(field.isAnnotationPresent(Nullable.class) ? " (Null)" : "");
+                        Client.out.print(" : ");
+                    }
+
+                    if(isReadingFromBuffer && Client.in.size() == 0) throw new CannotCreateObjectException("Invalid number of arguments");
+
                     line = Client.in.readLine();
 
-                    if(line.equals("")) {
-                        if(field.isAnnotationPresent(Nullable.class)) {
+                    if (line.equals("")) {
+                        if (field.isAnnotationPresent(Nullable.class)) {
                             field.set(obj, null);
                         } else {
                             throw new NullFieldValueException();
@@ -113,22 +133,27 @@ public class ObjectUtils {
                         } else {
                             Object value = convertFunction.apply(line);
 
-                            if(checkValueForRestrictions(field, value))
+                            if (checkValueForRestrictions(field, value))
                                 field.set(obj, value);
                             else
-                                throw new FieldRestrictionException();
+                                throw new FieldRestrictionException("Entered value has exceeded the allowed restrictions");
                         }
                     }
                 }
-            } catch (NullFieldValueException nfve) {
-                Client.out.print("Field value cannot be null\n");
-                iterator.previous();
-            } catch (FieldRestrictionException fre) {
-                Client.out.print("Entered value has exceeded the allowed restrictions\n");
-                iterator.previous();
+            } catch (NullFieldValueException | FieldRestrictionException e) {
+                if(!isReadingFromBuffer) {
+                    Client.out.print(e.getMessage() + "\n");
+                    iterator.previous();
+                } else
+                    throw new CannotCreateObjectException(e.getMessage(), e);
             } catch (NumberFormatException nfe) {
-                Client.out.print("Invalid value for field with " + fieldType.getSimpleName() + " type. Please try again\n");
-                iterator.previous();
+                if(!isReadingFromBuffer) {
+                    Client.out.print("Invalid value for field with " + fieldType.getSimpleName() + " type. Please try again\n");
+                    iterator.previous();
+                } else
+                    throw new CannotCreateObjectException("Invalid value for field " + ClT.getSimpleName() + "." + field.getName() + " with " + fieldType.getSimpleName() + " type", nfe);
+            } catch(CannotCreateObjectException ccoe) {
+                throw new CannotCreateObjectException(ccoe.getMessage(), ccoe);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -195,7 +220,7 @@ public class ObjectUtils {
     }
 
     public static void setFieldValue(Object o, String fieldName, Object value) throws NoSuchFieldException, IllegalArgumentException {
-        Field field = o.getClass().getField(fieldName);
+        Field field = o.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
 
         try {
@@ -214,17 +239,29 @@ public class ObjectUtils {
             return o1.compareTo(o2);
     }
 
-    public static boolean agreement(InputManager in, OutputManager out, String phrase) {
-        out.print(phrase);
-        switch (in.readLine().toLowerCase()) {
-            case "y", "yes" -> {
+    public static boolean agreement(InputManager in, OutputManager out, String phrase, boolean isReadingFromBuffer) {
+        String answer;
+        if(isReadingFromBuffer) {
+            if(Client.in.size() == 0)
+                answer = "n";
+            else
+                answer = in.readLine().trim().toLowerCase();
+        } else {
+            out.print(phrase);
+            answer = in.readLine().trim().toLowerCase();
+        }
+
+        switch (answer) {
+            case "y", "yes", "" -> {
                 return true;
             }
             case "n", "no" -> {
                 return false;
             }
             default -> {
-                return agreement(in, out, phrase);
+                if(isReadingFromBuffer)
+                    return false;
+                return agreement(in, out, phrase, false);
             }
         }
     }

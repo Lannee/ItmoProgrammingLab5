@@ -54,8 +54,8 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
 
             for(String[] values : csvContent) {
                 try {
-                    collection.add(getClT()
-                                    .cast(createObject(getClT(), headers, values)));
+                    add(getClT()
+                            .cast(createObject(getClT(), headers, values)));
 
                 } catch (ReflectiveOperationException e) {
                     Client.out.print("Unable to create an object\n");
@@ -63,7 +63,7 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
             }
 
         } catch (FileFormatException e) {
-            if(!ObjectUtils.agreement(Client.in, Client.out, e.getMessage() + ". Do you want to rewrite this file (y/n) : ")) {
+            if(!ObjectUtils.agreement(Client.in, Client.out, e.getMessage() + ". Do you want to rewrite this file (y/n) : ", false)) {
                 System.exit(0);
             }
         } catch(FileReadModeException frme) {
