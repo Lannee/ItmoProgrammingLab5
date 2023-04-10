@@ -19,15 +19,9 @@ public class RemoveFirst implements Command {
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
-        if(receiver.collectionSize() == 0) {
-            Client.out.print("Cannot remove since the collection is empty\n");
-        } else {
-            Object firstElement = receiver.getElementByIndex(0);
-            if(receiver.removeOn(e -> firstElement == e)) {
-                Client.out.print("First object was successfully removed\n");
-            } else {
-                Client.out.print("Unable to remove element from the collection\n");
-            }
+        Object firstElement = receiver.getElementByIndex(0);
+        if(receiver.removeOn(e -> firstElement == e, false)) {
+            Client.out.print("First object was successfully removed\n");
         }
     }
 

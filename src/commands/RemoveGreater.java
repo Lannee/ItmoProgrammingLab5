@@ -1,6 +1,8 @@
 package main.java.src.commands;
 
+import main.java.src.Client;
 import main.java.src.logic.data.Receiver;
+import main.java.src.logic.exceptions.CannotCreateObjectException;
 import main.java.src.utils.ObjectUtils;
 
 /**
@@ -19,8 +21,12 @@ public class RemoveGreater implements Command {
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
-        Object obj = ObjectUtils.createObjectInteractively(receiver.getStoredType());
-        receiver.removeOn(e -> e.compareTo(receiver.getStoredType().cast(obj)) > 0);
+        try {
+            Object obj = ObjectUtils.createObjectInteractively(receiver.getStoredType());
+            receiver.removeOn(e -> e.compareTo(receiver.getStoredType().cast(obj)) > 0, false);
+        } catch (CannotCreateObjectException e) {
+            Client.out.print(e.getMessage() + "\n");
+        }
     }
 
     @Override

@@ -28,7 +28,7 @@ public class Update implements Command {
             Object obj = receiver.getElementByFieldValue(args()[0], id);
 
             if(obj == null) {
-                if(!ObjectUtils.agreement(Client.in, Client.out, "Element with this id does not exist, do you want to create it (y/n) : ")) {
+                if(!ObjectUtils.agreement(Client.in, Client.out, "Element with this id does not exist, do you want to create it (y/n) : ", false)) {
                     return;
                 }
             }

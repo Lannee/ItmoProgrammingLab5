@@ -22,9 +22,9 @@ public class RemoveById implements Command {
         checkArgsConformity(args);
 
         try {
-            Long id = (Long) StringConverter.methodForType.get(Long.class).apply(args[0]);
+            Long id = Long.parseLong(args[0]);
             Object obj = receiver.getElementByFieldValue(args()[0], id);
-            if(receiver.removeFromCollection(obj)) {
+            if(receiver.removeOn(e -> e == obj, false)) {
                 Client.out.print("Object with " + args()[0] + " " + id + " was successfully removed\n");
             } else {
                 Client.out.print("Unable to remove element from the collection. No element with such " + args()[0] + "\n");
