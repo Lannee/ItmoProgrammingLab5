@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class Invoker {
 
-    private final Map<String, Command> declaredCommands = new HashMap<>();
+    private final Map<String, Command> declaredCommands = new TreeMap<>();
 
     private final Receiver receiver;
 
@@ -38,6 +38,14 @@ public class Invoker {
         declaredCommands.put("remove_greater", new RemoveGreater(receiver));
         declaredCommands.put("count_greater_than_weight", new CountGreaterThanWeight(receiver));
         declaredCommands.put("group_counting_by_id", new GroupCountingById(receiver));
+    }
+
+    public int getRecursionSize() {
+        return files.size();
+    }
+
+    public void clearRecursion() {
+        files.clear();
     }
 
     public void execute_script(String file) {

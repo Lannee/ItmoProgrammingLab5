@@ -25,7 +25,7 @@ public class RemoveGreater implements Command {
             Object obj = ObjectUtils.createObjectInteractively(receiver.getStoredType());
             receiver.removeOn(e -> e.compareTo(receiver.getStoredType().cast(obj)) > 0, false);
         } catch (CannotCreateObjectException e) {
-            Client.out.print(e.getMessage() + "\n");
+            Client.out.print("Unable to create object: " + e.getMessage() + "\n");
         }
     }
 

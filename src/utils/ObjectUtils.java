@@ -30,7 +30,6 @@ public class ObjectUtils {
      */
     public static <T> T createObjectInteractively(Class<T> ClT) throws CannotCreateObjectException {
 
-        InputManager inputManager = Client.in;
         boolean isReadingFromBuffer = !Client.in.isBufferEmpty();
 
         T obj = null;
@@ -44,13 +43,6 @@ public class ObjectUtils {
                 .toArray(Field[]::new);
 
         List<Field> fieldsList = Arrays.asList(fields);
-
-//        if(isReadingFromBuffer && fieldsList.size() > bufferFullness) {
-////            while(!Client.in.isBufferEmpty()) {
-////                Client.in.readLine();
-////            }
-//            throw new CannotCreateObjectException("Invalid number of arguments");
-//        }
 
         ListIterator<Field> iterator = fieldsList.listIterator();
 
@@ -162,7 +154,7 @@ public class ObjectUtils {
         return obj;
     }
 
-    private static boolean checkValueForRestrictions(Field field, Object value) {
+    public static boolean checkValueForRestrictions(Field field, Object value) {
         if(!field.isAnnotationPresent(Restriction.class)) return true;
 
         boolean out;
@@ -245,13 +237,13 @@ public class ObjectUtils {
             if(Client.in.size() == 0)
                 answer = "n";
             else
-                answer = in.readLine().trim().toLowerCase();
+                answer = in.readLine();
         } else {
             out.print(phrase);
-            answer = in.readLine().trim().toLowerCase();
+            answer = in.readLine();
         }
 
-        switch (answer) {
+        switch (answer.trim().toLowerCase()) {
             case "y", "yes", "" -> {
                 return true;
             }

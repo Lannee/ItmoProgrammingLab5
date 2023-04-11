@@ -31,7 +31,7 @@ public class Receiver {
                             )));
             Client.out.print(collection.getClT().getSimpleName() + " was successfully created\n");
         } catch (CannotCreateObjectException e) {
-            Client.out.print(e.getMessage() + "\n");
+            Client.out.print("Unable to create object: " + e.getMessage() + "\n");
         }
     }
 
@@ -46,7 +46,7 @@ public class Receiver {
         } catch (NoSuchFieldException e) {
             Client.out.print("Stored type does not support this command\n");
         } catch (IllegalArgumentException | CannotCreateObjectException e) {
-            Client.out.print(e.getMessage() + "\n");
+            Client.out.print("Unable to create object: " + e.getMessage() + "\n");
         }
     }
 
@@ -64,7 +64,7 @@ public class Receiver {
     }
 
     public String getFormattedCollection() {
-        return getFormattedCollection(Comparator.naturalOrder());
+        return getFormattedCollection(Comparator.reverseOrder());
     }
 
     public <T> Integer countCompareToValueByField(String fieldName, String value, Comparator<Comparable<T>> comparator) throws NumberFormatException {
@@ -73,6 +73,9 @@ public class Receiver {
             Field field = collection.getClT().getDeclaredField(fieldName);
             field.setAccessible(true);
             Comparable givenValue = (Comparable) StringConverter.methodForType.get(field.getType()).apply(value);
+            if(!ObjectUtils.checkValueForRestrictions(field, givenValue)) {
+                throw new NumberFormatException();
+            }
             for(Object element : collection.getElements()) {
                 try {
                     if(comparator.compare(givenValue, (Comparable)field.get(element)) > 0) counter++;
@@ -139,6 +142,21 @@ public class Receiver {
         }
 
         return !removed.isEmpty();
+    }
+
+    public boolean removeByIndex(int index, boolean showRemoved) {
+        if(collection.size() == 0) {
+            Client.out.print("Cannot remove since the collection is empty\n");
+            return false;
+        }
+
+        if(index > collection.size()) {
+            Client.out.print("Cannot remove from collection: index is out of bound\n");
+            return false;
+        }
+
+        Object obj = getElementByIndex(index);
+        return removeOn(e -> e == obj, showRemoved);
     }
 
     public Class<Dragon> getStoredType() {

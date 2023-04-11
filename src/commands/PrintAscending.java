@@ -22,7 +22,7 @@ public class PrintAscending implements Command {
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
-        Client.out.print(receiver.getFormattedCollection(Comparator.reverseOrder()) + "\n");
+        Client.out.print(receiver.getFormattedCollection(Comparator.naturalOrder()) + "\n");
 
     }
 

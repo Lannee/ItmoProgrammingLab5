@@ -36,7 +36,8 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
 
 
     public void sort() {
-        Collections.sort(collection);
+//        Collections.sort(collection);
+        Collections.sort(collection, Comparator.reverseOrder());
     }
 
     @Override
@@ -70,6 +71,7 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
     public void addAll(Collection<T> collection) {
         collection.addAll(collection);
         sort();
+        modification = LocalDateTime.now();
     }
     @Override
     public void clear() {
@@ -99,14 +101,19 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
 
     @Override
     public List<T> getElements() {
-        return new LinkedList<>(collection);
+        return getElements(Comparator.naturalOrder());
     }
 
     @Override
     public List<T> getElements(Comparator<? super T> sorter) {
+        return getElements(sorter, 0, size());
+    }
+
+    @Override
+    public List<T> getElements(Comparator<? super T> sorter, int startIndex, int endIndex) {
         List<T> copy = new LinkedList<>(collection);
         copy.sort(sorter);
-        return copy;
+        return copy.subList(startIndex, endIndex);
     }
 
 }

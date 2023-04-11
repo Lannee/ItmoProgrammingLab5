@@ -19,8 +19,7 @@ public class RemoveHead implements Command {
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
-        Object firstElement = receiver.getElementByIndex(0);
-        receiver.removeOn(e -> firstElement == e, true);
+        receiver.removeByIndex(0, true);
     }
 
     @Override

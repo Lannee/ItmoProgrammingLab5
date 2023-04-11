@@ -19,8 +19,7 @@ public class RemoveFirst implements Command {
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
-        Object firstElement = receiver.getElementByIndex(0);
-        if(receiver.removeOn(e -> firstElement == e, false)) {
+        if(receiver.removeByIndex(0, false)) {
             Client.out.print("First object was successfully removed\n");
         }
     }

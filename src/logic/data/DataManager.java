@@ -63,6 +63,8 @@ public interface DataManager<T extends Comparable<? super T>> {
      */
     List<T> getElements(Comparator<? super T> sorter);
 
+    List<T> getElements(Comparator<? super T> sorter, int startIndex, int endIndex);
+
     /**
      * Initialize collection from specified source
      * @param filePath
