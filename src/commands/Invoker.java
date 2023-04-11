@@ -7,6 +7,7 @@ import main.java.src.logic.streams.InputManager;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +20,9 @@ public class Invoker {
     private final Map<String, Integer> files = new HashMap<>();
 
     private Integer recursionDepth = 1;
+
+    private static final Pattern ARG_PAT = Pattern.compile("\"[^\"]+\"|\\S+");
+
 
     public Invoker(Receiver receiver) {
         this.receiver = receiver;
@@ -111,37 +115,27 @@ public class Invoker {
         request = request.trim();
         if(request.equals("")) return;
 
-//        String[] words = request.split("( )+", 2);
-//
-//
-//        String command = words[0];
-//        String[] args;
-//        if(words.length == 1) { args = new String[0]; }
-//        else { args = Arrays.copyOfRange(words, 1, words.length); }
-
         String[] words = request.split("( )+", 2);
 
-        String command = words[0];
-        List<String> args = new ArrayList<>();
-        if(words.length > 1) {
-            Pattern splitter = Pattern.compile("\"(.*?)\"");
-            Matcher matcher = splitter.matcher(words[1]);
-            while(matcher.find()) {
-                args.add(matcher.group(1));
-                words[1] = words[1].replaceFirst(matcher.group(0), "");
-            }
+        String command = words[0].toLowerCase();
+        String[] args;
+        if(words.length == 1)
+            args = new String[0];
+        else
+            args = parseArgs(words[1]);
 
-            words[1] = words[1].trim();
-            if(!words[1].equals("")) {
-                args.addAll(List.of(words[1].split("( )+")));
-            }
-//            System.out.println(args);
-        }
-
-        if(declaredCommands.containsKey(command.toLowerCase())) {
-            declaredCommands.get(command.toLowerCase()).execute(args.toArray(String[]::new));
+        if(declaredCommands.containsKey(command)) {
+            declaredCommands.get(command).execute(args);
         } else {
             Client.out.print("Unknown command " + command + ". Type help to get information about all commands.\n");
         }
+    }
+    
+    private String[] parseArgs(String line) {
+        return ARG_PAT.matcher(line)
+                    .results()
+                    .map(MatchResult::group)
+                    .map(e -> e.replaceAll("\"", ""))
+                    .toArray(String[]::new);
     }
 }
