@@ -4,10 +4,23 @@ package main.java.src.commands;
  * Command interface, sets the behavior for each team in the project
  */
 public interface Command {
+
+    /**
+     * Method executing the command
+     * @param args command arguments to execute with
+     */
     void execute(String[] args);
 
+    /**
+     * returns command description
+     * @return returns command description
+     */
     String getDescription();
 
+    /**
+     * returns command args
+     * @return returns command args
+     */
     String[] args();
 
     /**
@@ -17,9 +30,5 @@ public interface Command {
      */
     default void checkArgsConformity(String[] args) {
         if(args.length != args().length) throw new IllegalArgumentException("Invalid number of arguments");
-    }
-
-    static void checkArgsConformity(String[] args1, String[] args2) {
-        if(args1.length != args2.length) throw new IllegalArgumentException("Invalid number of arguments");
     }
 }

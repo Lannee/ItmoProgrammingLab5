@@ -35,14 +35,14 @@ public interface DataManager<T extends Comparable<? super T>> {
 
     /**
      *
-     * @param id
+     * @param id index of element
      * @return element with given index
      */
     T get(int id);
 
     /**
      * Removes specified element from the collection
-     * @param o
+     * @param o object to remove
      * @return true - if element was removed successfully, else - false
      */
     boolean remove(Object o);

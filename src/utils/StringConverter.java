@@ -13,9 +13,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Util class for suitable String parsing
+ * Util class for suitable String parsing to different types
  */
 public class StringConverter {
+    /**
+     * map containing converting function for every class
+     */
     public final static Map<Class<?>, Function<String, ?>> methodForType = new HashMap<>();
 
     static {

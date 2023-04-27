@@ -5,6 +5,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import main.java.src.Client;
 import main.java.src.annotations.Complex;
 import main.java.src.annotations.Nullable;
+import main.java.src.annotations.Unique;
 import main.java.src.logic.exceptions.FileFormatException;
 import main.java.src.logic.exceptions.FileReadModeException;
 import main.java.src.utils.ObjectUtils;
@@ -27,6 +28,10 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
         super(clT);
     }
 
+    /**
+     * Initialize collection from specified source
+     * @param filePath path to file
+     */
     @Override
     public void initialize(String filePath) {
         File csvFile = new File(filePath);
@@ -38,7 +43,6 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
             CSVReader reader = new CSVReader(isr)) {
 
             if(!csvFile.exists() || csvFile.isDirectory()) throw new FileNotFoundException();
-            if(!csvFile.canRead()) throw new FileReadModeException();
             super.file = csvFile;
             super.attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
             super.modification = LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
@@ -51,11 +55,10 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
             } else {
                 throw new FileFormatException("File is empty");
             }
-
             for(String[] values : csvContent) {
                 try {
                     add(getClT()
-                            .cast(createObject(getClT(), headers, values)));
+                            .cast(createObject(getClT(), headers, values, getElements())));
 
                 } catch (ReflectiveOperationException e) {
                     Client.out.print("Unable to create an object\n");
@@ -66,11 +69,11 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
             if(!ObjectUtils.agreement(Client.in, Client.out, e.getMessage() + ". Do you want to rewrite this file (y/n) : ", false)) {
                 System.exit(0);
             }
-        } catch(FileReadModeException frme) {
-            Client.out.print("Cannot read the file\n");
-            System.exit(3);
         } catch (FileNotFoundException fnfe) {
-            Client.out.print("File does not exist or it is a directory\n");
+            if(!csvFile.canRead())
+                Client.out.print("Cannot read the file\n");
+            else
+                Client.out.print("File does not exist or it is a directory\n");
             System.exit(2);
         } catch (IOException e) {
             Client.out.print("Unable to initialize collection\n");
@@ -78,6 +81,9 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
         }
     }
 
+    /**
+     * Saves collection into file
+     */
     @Override
     public void save() {
         List<String[]> toCSV = new ArrayList<>(collection.size() + 1);
@@ -93,7 +99,7 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
 
     }
 
-    private static <T> T createObject(Class<T> cl, String[] headers, String[] values) throws FileFormatException, ReflectiveOperationException {
+    private static <T> T createObject(Class<T> cl, String[] headers, String[] values, List<?> collection) throws FileFormatException, ReflectiveOperationException {
         T obj = cl.getConstructor().newInstance();
 
         List<String[]> headersElements = Arrays.stream(headers)
@@ -136,7 +142,7 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                 String[] exValues = Arrays.copyOfRange(values, exLevelStart, exLevelEnd + 1);
 
                 exHeaders = Arrays.stream(exHeaders).map(e -> e.substring(reducePrefix.length())).toArray(String[]::new);
-                field.set(obj, createObject(fieldType, exHeaders, exValues));
+                field.set(obj, createObject(fieldType, exHeaders, exValues, collection));
             } else {
                 if(fieldType.isEnum()) {
                     Object enumValue;
@@ -150,7 +156,6 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                             enumValue = Enum.valueOf((Class<Enum>) fieldType, values[i]);
                     } catch (IllegalArgumentException iae) {
                         throw new ReflectiveOperationException();
-//                        throw new RuntimeException(iae);
                     }
                     field.set(obj, enumValue);
                 } else {
@@ -161,10 +166,16 @@ public class CSVFileDataManager<T extends Comparable<? super T>> extends FileDat
                     } else {
                         if(!StringConverter.methodForType.containsKey(fieldType)) throw new FileFormatException("Unsupported field type");
                         try {
-                            field.set(obj,
-                                    StringConverter.methodForType
-                                            .get(field.getType())
-                                            .apply(value));
+                            Object valueConverted =  StringConverter.methodForType
+                                    .get(field.getType())
+                                    .apply(value);
+                            if(field.isAnnotationPresent(Unique.class)) {
+                                for (Object element : collection) {
+                                    if(valueConverted.equals(field.get(element)))
+                                        throw new ReflectiveOperationException("Unique field value cannot be repeated");
+                                }
+                            }
+                            field.set(obj, valueConverted);
                         } catch (NumberFormatException e) {
                             throw new FileFormatException("Invalid data");
                         }

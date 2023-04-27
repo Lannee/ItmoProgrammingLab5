@@ -8,14 +8,25 @@ import main.java.src.logic.data.Receiver;
  */
 public class CountGreaterThanWeight implements Command {
 
+    /**
+     * array of command arguments
+     */
     private final static String[] args = {"weight"};
 
     private final Receiver receiver;
 
+    /**
+     * Command constructor
+     * @param receiver receiver to count in
+     */
     public CountGreaterThanWeight(Receiver receiver) {
         this.receiver = receiver;
     }
 
+    /**
+     * Method executing the command
+     * @param args command arguments to execute with
+     */
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
@@ -27,11 +38,19 @@ public class CountGreaterThanWeight implements Command {
         }
     }
 
+    /**
+     * returns command args
+     * @return returns command args
+     */
     @Override
     public String[] args() {
         return args;
     }
 
+    /**
+     * returns command description
+     * @return returns command description
+     */
     @Override
     public String getDescription() {
         return "Print the number of elements whose " + args[0] + " field value is greater than the specified one";

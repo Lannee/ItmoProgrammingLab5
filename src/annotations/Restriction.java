@@ -13,6 +13,15 @@ import java.lang.annotation.Target;
 @Target(value = ElementType.FIELD)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Restriction {
+    /**
+     * sets validationMode
+     * @return validationMode
+     */
     ValidationMode filter();
+
+    /**
+     * value to compare with
+     * @return value to compare with
+     */
     double value();
 }

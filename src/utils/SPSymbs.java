@@ -1,5 +1,8 @@
 package main.java.src.utils;
 
+/**
+ * Special symbols
+ */
 public enum SPSymbs {
 
     TABLE_CORNER_TOP_LEFT('╔'),

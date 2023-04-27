@@ -29,6 +29,10 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
         this.clT = clT;
     }
 
+    /**
+     *
+     * @return returns stored class
+     */
     @Override
     public Class<T> getClT() {
         return clT;
@@ -55,6 +59,9 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
                                 FormatStyle.MEDIUM, FormatStyle.MEDIUM));
     }
 
+    /**
+     * @return size of the collection
+     */
     @Override
     public int size() {
         return collection.size();
@@ -78,11 +85,21 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
         collection.clear();
     }
 
+
+    /**
+     * @param id index of element
+     * @return element with given index
+     */
     @Override
     public T get(int id) {
         return collection.get(id);
     }
 
+    /**
+     * Removes specified element from the collection
+     * @param o object to remove
+     * @return true - if element was removed successfully, else - false
+     */
     @Override
     public boolean remove(Object o) {
         for(T element : collection) {
@@ -99,11 +116,18 @@ public abstract class FileDataManager<T extends Comparable<? super T>> implement
         collection.forEach(action);
     }
 
+    /**
+     * @return collection elements in standard ordering
+     */
     @Override
     public List<T> getElements() {
         return getElements(Comparator.naturalOrder());
     }
 
+    /**
+     * @param sorter elements sorter
+     * @return collection elements sorted by given sorter
+     */
     @Override
     public List<T> getElements(Comparator<? super T> sorter) {
         return getElements(sorter, 0, size());

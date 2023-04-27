@@ -154,6 +154,12 @@ public class ObjectUtils {
         return obj;
     }
 
+    /**
+     * checks value for restrictions
+     * @param field field to check
+     * @param value filed value
+     * @return returns true if the value fits
+     */
     public static boolean checkValueForRestrictions(Field field, Object value) {
         if(!field.isAnnotationPresent(Restriction.class)) return true;
 
@@ -171,6 +177,11 @@ public class ObjectUtils {
         return out;
     }
 
+    /**
+     * returns field restrictions in String format
+     * @param field field to get restrictions from
+     * @return returns field restrictions in String format
+     */
     private static String getFieldRestrictions(Field field) {
         Class<?> fieldType = field.getType();
         Double[] baseRestrictions = BaseTypesRestrictions.restrictions.get(fieldType);
@@ -211,6 +222,14 @@ public class ObjectUtils {
         }
     }
 
+    /**
+     * sets the value to a field in given object
+     * @param o object to set value to
+     * @param fieldName name of objects filed
+     * @param value value to set
+     * @throws NoSuchFieldException thrown is object does not have this field
+     * @throws IllegalArgumentException thrown if value cannot have that value
+     */
     public static void setFieldValue(Object o, String fieldName, Object value) throws NoSuchFieldException, IllegalArgumentException {
         Field field = o.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
@@ -220,6 +239,13 @@ public class ObjectUtils {
         } catch (IllegalAccessException e) { }
     }
 
+    /**
+     * null save elements compare
+     * @param o1 first object
+     * @param o2 second object
+     * @return returns a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second
+     * @param <T> compared objects
+     */
     public static <T extends Comparable<T>> int saveCompare(T o1, T o2) {
         if(o1 == null & o2 == null)
             return 0;
@@ -231,6 +257,14 @@ public class ObjectUtils {
             return o1.compareTo(o2);
     }
 
+    /**
+     * ask user to agree ore disagree with something
+     * @param in input stream
+     * @param out output stream
+     * @param phrase phrase to show to user
+     * @param isReadingFromBuffer do we read from buffer
+     * @return returns true if user is agreed with phrase, if not returns false
+     */
     public static boolean agreement(InputManager in, OutputManager out, String phrase, boolean isReadingFromBuffer) {
         String answer;
         if(isReadingFromBuffer) {
@@ -258,6 +292,12 @@ public class ObjectUtils {
         }
     }
 
+    /**
+     * returns headers from given class
+     * @param cl class to get the headers from
+     * @param showClassName do we need to add "Class" to every header
+     * @return
+     */
     public static String[] getHeaders(Class<?> cl, boolean showClassName) {
         List<String> headers = new LinkedList<String>();
 
@@ -285,6 +325,11 @@ public class ObjectUtils {
         return headers.toArray(String[]::new);
     }
 
+    /**
+     * returns object fields values as Strings
+     * @param obj object to get values from
+     * @return returns object fields values as Strings
+     */
     public static String[] getFieldsValues(Object obj) {
         Class<?> objCl = obj.getClass();
         List<String> values = new LinkedList<String>();
@@ -330,6 +375,12 @@ public class ObjectUtils {
         return values.toArray(String[]::new);
     }
 
+    /**
+     * returns all fields with specified annotation
+     * @param cl class to get fields from
+     * @param annotation annotation
+     * @return returns all fields with specified annotation
+     */
     public static Field[] getFieldsWithAnnotation(Class<?> cl, Class<? extends Annotation> annotation) {
         return Arrays.stream(cl
                         .getDeclaredFields())
@@ -337,6 +388,11 @@ public class ObjectUtils {
                 .toArray(Field[]::new);
     }
 
+    /**
+     * returns all objects fields
+     * @param cl class to count fields in
+     * @return returns all objects fields
+     */
     private static Integer countObjectsFields(Class<?> cl) {
         Integer out = 0;
         Field[] fields = Arrays.stream(cl

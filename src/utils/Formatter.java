@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * formatting given collection
+ */
 public class Formatter {
 
     public Formatter() {
@@ -11,6 +14,13 @@ public class Formatter {
     }
 
 
+    /**
+     * format given collection as a table
+     * @param collection
+     * @param clT class of stored element
+     * @return returns given collection in table format
+     * @param <T> type of stored elements
+     */
     public static <T> String format(Collection<T> collection, Class<T> clT) {
         String[] headers = ObjectUtils.getHeaders(clT, false);
         List<String[]> elements = new ArrayList<>(collection.size());

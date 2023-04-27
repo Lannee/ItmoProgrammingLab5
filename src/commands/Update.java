@@ -10,14 +10,25 @@ import main.java.src.utils.StringConverter;
  */
 public class Update implements Command {
 
+    /**
+     * array of command arguments
+     */
     public final static String[] args = {"id"};
 
     private final Receiver receiver;
 
+    /**
+     * Command constructor
+     * @param receiver receiver to edit data in
+     */
     public Update(Receiver receiver) {
         this.receiver = receiver;
     }
 
+    /**
+     * Method executing the command
+     * @param args command arguments to execute with
+     */
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
@@ -44,11 +55,19 @@ public class Update implements Command {
         }
     }
 
+    /**
+     * returns command description
+     * @return returns command description
+     */
     @Override
     public String getDescription() {
         return  "Updates the value of a collection item whose " + args[0] + " is equal to the specified one";
     }
 
+    /**
+     * returns command args
+     * @return returns command args
+     */
     @Override
     public String[] args() {
         return args;

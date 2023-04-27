@@ -7,9 +7,17 @@ import main.java.src.logic.streams.ConsoleOutputManager;
 import main.java.src.logic.streams.InputManager;
 import main.java.src.logic.streams.OutputManager;
 
+
+/**
+ * Client class doing reading commands from console
+ */
 public class Client {
 
     private final Invoker invoker;
+
+    /**
+     * Invitation to input string
+     */
     public final static String invite = ">>>";
 
     private final static String logo = """
@@ -21,9 +29,20 @@ public class Client {
             ╚═══╝╚╝ ╚╝╚═══╝ ╚═══╝     ╚══╝  ╚╝  ╚╝╚╝╚╝╚═══╝  ╚═╝╚═╝╚═╝╚╩╝╚═╝
             """;
 
+    /**
+     * output stream ot send data to
+     */
     public static final OutputManager out = new ConsoleOutputManager();
+
+    /**
+     * input stream to get data from
+     */
     public static final InputManager in = new ConsoleInputManager();
 
+    /**
+     * Client constructor
+     * @param args name of file containing collection
+     */
     public Client(String[] args) {
         if(args.length == 0) {
             out.print("Incorrect number of arguments\n");
@@ -42,14 +61,22 @@ public class Client {
             );
     }
 
+    /**
+     * method, starting the client and reading data from user
+     */
     public void runClient() {
         out.print("Hello, Welcome to\n");
         out.print(logo);
         out.print("Type \"help\" to get the information about all commands\n");
+
         String line;
         while (true) {
             try {
-                out.print(invite + " ");
+                if(in.isBufferEmpty()) {
+                    if(invoker.getRecursionSize() != 0)
+                        invoker.clearRecursion();
+                    out.print(invite + " ");
+                }
                 line = in.readLine();
                 invoker.parseCommand(line);
             } catch (IllegalArgumentException iae) {

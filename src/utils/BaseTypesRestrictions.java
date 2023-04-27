@@ -4,7 +4,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * contains min and max bounds of different types
+ */
 public final class BaseTypesRestrictions {
+    /**
+     * map containing different classes restrictions
+     */
     public final static Map<Class<?>, Double[]> restrictions = new HashMap<>();
 
     static {

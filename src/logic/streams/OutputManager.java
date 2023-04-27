@@ -5,8 +5,7 @@ package main.java.src.logic.streams;
  */
 public interface OutputManager {
     /**
-     * Prints given string to OutputStream
-     * @param message
+     * @param message message to send to user
      */
     void print(String message);
 }

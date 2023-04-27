@@ -11,6 +11,9 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Contains the information about all command and executes them
+ */
 public class Invoker {
 
     private final Map<String, Command> declaredCommands = new TreeMap<>();
@@ -24,6 +27,10 @@ public class Invoker {
     private static final Pattern ARG_PAT = Pattern.compile("\"[^\"]+\"|\\S+");
 
 
+    /**
+     * Invoker constructor
+     * @param receiver gets receiver for commands to work with
+     */
     public Invoker(Receiver receiver) {
         this.receiver = receiver;
         declaredCommands.put("help", new Help(this));
@@ -44,19 +51,36 @@ public class Invoker {
         declaredCommands.put("group_counting_by_id", new GroupCountingById(receiver));
     }
 
+    /**
+     * @return returns amount of files that were executed
+     */
     public int getRecursionSize() {
         return files.size();
     }
 
+    /**
+     * Clears the information about executed_files
+     */
     public void clearRecursion() {
         files.clear();
     }
 
+    /**
+     * Loads data form file to users InputManager buffer
+     * @param file file to execute
+     */
     public void execute_script(String file) {
-        if(!new File(file).exists()) {
+        File f = new File(file);
+        if(!f.exists()) {
             Client.out.print("File \"" + file + "\" does not exist\n");
             return;
         }
+
+        if(!f.canRead()) {
+            Client.out.print("Cannot read file \"" + file + "\"\n");
+            return;
+        }
+
         if(files.containsKey(file)) {
             Integer value = files.get(file);
             if(value >= recursionDepth) {
@@ -99,6 +123,9 @@ public class Invoker {
         }
     }
 
+    /**
+     * @return returns the information about all commands
+     */
     public String commandsInfo() {
         StringBuilder out = new StringBuilder();
         declaredCommands.forEach((key, value) -> {
@@ -111,6 +138,9 @@ public class Invoker {
         return out.toString();
     }
 
+    /**
+     * @param request users request to parse and execute needed command
+     */
     public void parseCommand(String request) {
         request = request.trim();
         if(request.equals("")) return;

@@ -1,5 +1,8 @@
 package main.java.src.logic.exceptions;
 
+/**
+ * thrown in situations when file cannot be read
+ */
 public class FileReadModeException extends Exception {
 
     public FileReadModeException() {

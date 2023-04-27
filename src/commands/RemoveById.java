@@ -9,14 +9,25 @@ import main.java.src.utils.StringConverter;
  */
 public class RemoveById implements Command {
 
+    /**
+     * array of command arguments
+     */
     private static final String[] args = {"id"};
 
     private final Receiver receiver;
 
+    /**
+     * Command constructor
+     * @param receiver receiver to remove from
+     */
     public RemoveById(Receiver receiver) {
         this.receiver = receiver;
     }
 
+    /**
+     * Method executing the command
+     * @param args command arguments to execute with
+     */
     @Override
     public void execute(String[] args) {
         checkArgsConformity(args);
@@ -36,11 +47,19 @@ public class RemoveById implements Command {
         }
     }
 
+    /**
+     * returns command description
+     * @return returns command description
+     */
     @Override
     public String getDescription() {
         return "Removes an item from the collection by its " + args[0];
     }
 
+    /**
+     * returns command args
+     * @return returns command args
+     */
     @Override
     public String[] args() {
         return args;
